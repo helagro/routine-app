@@ -7,9 +7,12 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import kotlinx.android.synthetic.main.activity_steps.*
+import java.util.*
 
 class StepsActivity : AppCompatActivity() {
     lateinit var routine: Routine
@@ -21,9 +24,24 @@ class StepsActivity : AppCompatActivity() {
 
         routine = intent.getParcelableExtra("routine")
         title = routine.name
-        steps_list.setCheeseList(routine.steps)
-        steps_list.adapter = StableArrayAdapter(this, android.R.layout.simple_list_item_1, routine.steps)
-        steps_list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        steps_list.layoutManager = LinearLayoutManager(this)
+        steps_list.adapter = MyRecyclerViewAdapter(this, routine.steps)
+
+        val itemTouchHelperCallbackList = object: ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
+            ): Boolean {
+                Collections.swap(routine.steps, viewHolder.adapterPosition, target.adapterPosition)
+                (steps_list.adapter as MyRecyclerViewAdapter).notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                TODO("Not yet implemented")
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallbackList)
+        itemTouchHelper.attachToRecyclerView(steps_list)
 
         fab.setOnClickListener { view ->
             addStep()
@@ -51,6 +69,6 @@ class StepsActivity : AppCompatActivity() {
 
     fun addStep(){
         routine.steps.add(Step(0, "Step"))
-        (steps_list.adapter as ArrayAdapter<Step>).notifyDataSetChanged()
+        steps_list.adapter?.notifyDataSetChanged()
     }
 }

@@ -54,6 +54,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addRoutine(){
-        routines.add(Routine(1, arrayListOf(Step(10, "Step"), Step(11, "Ste1"), Step(12, "Step2")), "Test"))
+        routines.add(Routine(1, arrayListOf(Step(10, "Step"), Step(11, "Step1"), Step(12, "Step2")), "Test"))
     }
 }
