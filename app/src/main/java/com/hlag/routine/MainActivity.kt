@@ -15,15 +15,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     var routines: ArrayList<Routine> = arrayListOf()
 
-    fun loadFromStorage(){
-        addRoutine()
-        (routines_gridview.adapter as RoutineAdapter).notifyDataSetChanged()
-    }
-
-    fun addRoutine(){
-        routines.add(Routine(1, arrayListOf(), "Test"))
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         routines_gridview.adapter = RoutineAdapter(this, routines)
         routines_gridview.setOnItemClickListener {parent, view, position, id ->
            //RoutineActivity.launch(this, routines.get(position))
-            startActivity(Intent(this, RoutineActivity::class.java).putExtra("routine", routines.get(0)))
+            startActivity(Intent(this, StepsActivity::class.java).putExtra("routine", routines.get(0)))
         }
 
         fab.setOnClickListener { view ->
@@ -55,5 +46,14 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun loadFromStorage(){
+        addRoutine()
+        (routines_gridview.adapter as RoutineAdapter).notifyDataSetChanged()
+    }
+
+    fun addRoutine(){
+        routines.add(Routine(1, arrayListOf(), "Test"))
     }
 }

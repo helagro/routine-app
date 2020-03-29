@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".StepsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,16 +20,10 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <GridView
-        android:layout_marginTop="80dp"
-        android:id="@+id/routines_gridview"
+    <com.woxthebox.draglistview.DragListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null"
-        android:layoutDirection="ltr"
-        android:numColumns="2"
-        android:verticalSpacing="16dp"
-        />
+        android:id="@+id/steps_list"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
