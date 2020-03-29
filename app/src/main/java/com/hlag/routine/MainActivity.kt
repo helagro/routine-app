@@ -14,6 +14,7 @@ import android.widget.GridView
 import androidx.core.app.ActivityCompat
 
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     var routines: ArrayList<Routine> = arrayListOf()
@@ -34,8 +35,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         fab.setOnClickListener { view ->
-            addRoutine()
-            (routines_gridview.adapter as RoutineAdapter).notifyDataSetChanged()
+            val dialog = TextDialog(this)
+            dialog.setOnDismissListener {
+                val text = dialog.editText.text.toString()
+                val routine = Routine(text, ArrayList<Step>())
+
+                MyApp.writeRoutine(this, routine)
+
+                routines.add(routine)
+                (routines_gridview.adapter as RoutineAdapter).notifyDataSetChanged()
+            }
+
         }
         loadFromStorage()
     }
@@ -57,11 +67,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadFromStorage(){
-        addRoutine()
+        val dir = File(MyApp.dir)
+        for(file in dir.listFiles()){
+            routines.add(Routine(file.nameWithoutExtension, ArrayList<Step>()))
+        }
         (routines_gridview.adapter as RoutineAdapter).notifyDataSetChanged()
-    }
-
-    fun addRoutine(){
-        routines.add(Routine(arrayListOf(Step(10, "Step"), Step(11, "Step1"), Step(12, "Step2")), "Test"))
     }
 }

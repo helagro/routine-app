@@ -10,7 +10,7 @@ class RoutineAdapter(context: Context, routines: ArrayList<Routine>) : ArrayAdap
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        Log.d("dw","dwadwa")
+
 
         return super.getView(position, convertView, parent)
     }
