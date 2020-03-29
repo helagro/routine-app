@@ -20,6 +20,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
+    private final int [] visible = {View.VISIBLE, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT};
+    private final int [] invisible = {View.GONE, 0, 0};
+
     // data is passed into the constructor
     MyRecyclerViewAdapter(Context context, List<Step> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -36,12 +39,29 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Log.d("tag", "onBindViewHolder: " + position);
         Step step = mData.get(position);
+
+        int []visibility = step.getChecked() ? invisible : visible;
+        holder.itemView.setVisibility(visibility[0]);
+        ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
+        params.width = visibility[1];
+        params.height = visibility[2];
+        holder.itemView.setLayoutParams(params);
+
         holder.myTextView.setText(step.getText());
         holder.myCheckbox.setChecked(step.getChecked());
         holder.myCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
             step.setChecked(compoundButton.isChecked());
+
+            holder.itemView.setVisibility(visible[0]);
+            ViewGroup.LayoutParams params2 = holder.itemView.getLayoutParams();
+            params2.height = 0;
+            params2.width = 0;
+            holder.itemView.setLayoutParams(params2);
         });
+
+
 
     }
 

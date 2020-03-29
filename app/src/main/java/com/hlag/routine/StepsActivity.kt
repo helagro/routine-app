@@ -62,7 +62,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         steps_list.addItemDecoration(divider)
 
         fab.setOnClickListener { view ->
-            routine.steps.add(Step(0, "Step"))
+            routine.steps.add(Step(0, "S"))
             steps_list.adapter?.notifyDataSetChanged()
         }
     }
@@ -115,6 +115,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     override fun onItemClick(view: View?, position: Int) {
         val textDialog = TextDialog(this)
+        textDialog.editText.setText(routine.steps.get(position).text)
         textDialog.setOnDismissListener {
             val text = textDialog.editText.text.toString()
             routine.steps.get(position).text = text
