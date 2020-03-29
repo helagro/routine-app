@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import android.widget.ListView
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.woxthebox.draglistview.DragItemAdapter
 
 import kotlinx.android.synthetic.main.activity_steps.*
 
@@ -21,10 +21,9 @@ class StepsActivity : AppCompatActivity() {
 
         routine = intent.getParcelableExtra("routine")
         title = routine.name
-
-        var adapter = ArrayAdapter<Step>(this, android.R.layout.simple_list_item_1)
-        var adapter2 =  DragItemAdapter<String, DragItemAdapter.ViewHolder>(this, )
-        steps_list.setAdapter(adapter2)
+        steps_list.setCheeseList(routine.steps)
+        steps_list.adapter = StableArrayAdapter(this, android.R.layout.simple_list_item_1, routine.steps)
+        steps_list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         fab.setOnClickListener { view ->
             addStep()
@@ -52,5 +51,6 @@ class StepsActivity : AppCompatActivity() {
 
     fun addStep(){
         routine.steps.add(Step(0, "Step"))
+        (steps_list.adapter as ArrayAdapter<Step>).notifyDataSetChanged()
     }
 }
