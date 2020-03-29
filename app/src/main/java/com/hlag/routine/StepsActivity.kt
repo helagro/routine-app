@@ -1,8 +1,10 @@
 package com.hlag.routine
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.google.android.material.snackbar.Snackbar
@@ -14,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_steps.*
 import java.util.*
 
-class StepsActivity : AppCompatActivity() {
+class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener{
     lateinit var routine: Routine
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,13 +28,15 @@ class StepsActivity : AppCompatActivity() {
         title = routine.name
 
         steps_list.layoutManager = LinearLayoutManager(this)
-        steps_list.adapter = MyRecyclerViewAdapter(this, routine.steps)
+        val stepAdapter = MyRecyclerViewAdapter(this, routine.steps)
+        stepAdapter.setClickListener(this)
+        steps_list.adapter = stepAdapter
 
         val itemTouchHelperCallbackList = object: ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
             ): Boolean {
                 Collections.swap(routine.steps, viewHolder.adapterPosition, target.adapterPosition)
-                (steps_list.adapter as MyRecyclerViewAdapter).notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
+                stepAdapter.notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
                 return false
             }
 
@@ -70,5 +74,14 @@ class StepsActivity : AppCompatActivity() {
     fun addStep(){
         routine.steps.add(Step(0, "Step"))
         steps_list.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onItemClick(view: View?, position: Int) {
+        var textDialog = TextDialog(this)
+        textDialog.setOnDismissListener {
+            val text = textDialog.editText.text.toString()
+            routine.steps.get(position).text = text
+            steps_list.adapter?.notifyItemChanged(position)
+        }
     }
 }

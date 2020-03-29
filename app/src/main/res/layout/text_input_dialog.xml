@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="100dp"
+    android:columnCount="2"
+    android:id="@+id/name_dialog_grid"
+    >
+
+    <EditText
+        android:layout_columnSpan="2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:hint="@string/color_name"
+        android:textSize="30dp"
+        android:background="@null"
+        android:id="@+id/name_dialog_edittext"
+        android:inputType="textNoSuggestions|textCapSentences"
+        android:importantForAutofill="no"
+        android:textColorHint="#aaa"
+        />
+
+
+    <Button
+        android:id="@+id/name_dialog_done"
+        style="@style/ColorNameDialogButton"
+        android:text="Done"
+        android:textColor="#0f0"
+        />
+
+    <Button
+        android:id="@+id/name_dialog_cancel"
+        style="@style/ColorNameDialogButton"
+        android:text="Cancel"
+        android:textColor="#b00"
+        />
+
+</GridLayout>
