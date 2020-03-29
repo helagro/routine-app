@@ -9,9 +9,11 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 
 import kotlinx.android.synthetic.main.activity_steps.*
 import java.util.*
@@ -46,6 +48,9 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallbackList)
         itemTouchHelper.attachToRecyclerView(steps_list)
+
+        val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        steps_list.addItemDecoration(divider)
 
         fab.setOnClickListener { view ->
             addStep()
@@ -83,5 +88,11 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             routine.steps.get(position).text = text
             steps_list.adapter?.notifyItemChanged(position)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        MyApp.writeRoutine(this, routine)
     }
 }

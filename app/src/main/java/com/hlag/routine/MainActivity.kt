@@ -1,6 +1,8 @@
 package com.hlag.routine
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -9,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.AdapterView
 import android.widget.GridView
+import androidx.core.app.ActivityCompat
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -17,6 +20,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0);
+            return
+        }
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         routines_gridview.adapter = RoutineAdapter(this, routines)
@@ -54,6 +62,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addRoutine(){
-        routines.add(Routine(1, arrayListOf(Step(10, "Step"), Step(11, "Step1"), Step(12, "Step2")), "Test"))
+        routines.add(Routine(arrayListOf(Step(10, "Step"), Step(11, "Step1"), Step(12, "Step2")), "Test"))
     }
 }
