@@ -6,4 +6,7 @@ import kotlinx.android.parcel.RawValue
 
 @Parcelize
 data class Routine(var name: String, var steps: @RawValue ArrayList<Step>) : Parcelable {
+    override fun toString(): String {
+        return name
+    }
 }

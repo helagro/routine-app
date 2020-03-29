@@ -5,10 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
@@ -33,8 +36,13 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Step animal = mData.get(position);
-        holder.myTextView.setText(animal.getText());
+        Step step = mData.get(position);
+        holder.myTextView.setText(step.getText());
+        holder.myCheckbox.setChecked(step.getChecked());
+        holder.myCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
+            step.setChecked(compoundButton.isChecked());
+        });
+
     }
 
     // total number of rows
@@ -47,10 +55,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
+        CheckBox myCheckbox;
 
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.tvAnimalName);
+            myCheckbox = itemView.findViewById(R.id.step_finished);
             itemView.setOnClickListener(this);
         }
 

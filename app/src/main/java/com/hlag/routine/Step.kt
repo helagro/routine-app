@@ -4,5 +4,5 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Step (var duration: Int, var text: String) : Parcelable {
+data class Step (var duration: Int, var text: String, var checked: Boolean = false) : Parcelable {
 }

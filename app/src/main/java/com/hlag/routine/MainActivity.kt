@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //Permissions
         if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0);
             return
@@ -28,10 +30,10 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
         routines_gridview.adapter = RoutineAdapter(this, routines)
         routines_gridview.setOnItemClickListener {parent, view, position, id ->
-           //RoutineActivity.launch(this, routines.get(position))
-            startActivity(Intent(this, StepsActivity::class.java).putExtra("routine", routines.get(0)))
+            startActivity(Intent(this, StepsActivity::class.java).putExtra("routine_name", routines.get(position).name))
         }
 
         fab.setOnClickListener { view ->
@@ -57,9 +59,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
