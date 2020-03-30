@@ -1,5 +1,8 @@
 package com.hlag.routine
 
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -18,7 +21,9 @@ import java.io.FileReader
 import java.io.IOException
 import java.util.*
 
-class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener, MyApp.TimerListeners {
+
+class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener,
+    MyApp.TimerListeners {
     lateinit var routine: Routine
 
 
@@ -71,12 +76,6 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         (application as MyApp).startTimer(300)
     }
 
-    override fun onResume() {
-        (application as MyApp).timerListener = this
-        super.onResume()
-    }
-
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -91,8 +90,8 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             R.id.action_delete -> {
                 return true
             }
-            R.id.action_uncheck ->{
-                routine.steps.forEach { step -> step.checked = false}
+            R.id.action_uncheck -> {
+                routine.steps.forEach { step -> step.checked = false }
                 steps_list.adapter?.notifyDataSetChanged()
                 return true
             }
@@ -122,6 +121,29 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         (application as MyApp).activeRoutine = routine
     }
 
+
+    override fun onResume() {
+        (application as MyApp).timerListener = this
+        if (isMyServiceRunning(RoutineService::class.java)) {
+            val intent = Intent(this, RoutineService::class.java)
+            intent.action = "PAUSE"
+            startService(intent)
+        }
+        super.onResume()
+    }
+
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager =
+            getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
+
+
     override fun onItemClick(view: View?, position: Int) {
         val textDialog = TextDialog(this)
         textDialog.editText.setText(routine.steps.get(position).text)
@@ -134,14 +156,23 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     override fun onPause() {
         super.onPause()
+        val intent = Intent(this, RoutineService::class.java)
+
+        if ((application as MyApp).timerRunning) {
+            intent.action = "START"
+        } else if (isMyServiceRunning(RoutineService::class.java)) {
+            intent.action = "DESTROY"
+        }
+
+
+        startService(intent)
 
         MyApp.writeRoutine(this, routine)
     }
 
     override fun everySecond(secsLeft: Int) {
-        Log.d("tag", "left:" + secsLeft)
+        //Log.d("tag", "left:" + secsLeft)
     }
-
 
 
     override fun onFinish() {

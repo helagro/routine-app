@@ -16,7 +16,6 @@ import java.sql.Time
 class MyApp : Application() {
 
     override fun onCreate() {
-
         super.onCreate()
     }
 
@@ -41,12 +40,12 @@ class MyApp : Application() {
 
     lateinit var timerListener: TimerListeners
     private lateinit var timer: CountDownTimer
+    var timerRunning = false
 
     interface TimerListeners {
         abstract fun everySecond(secsLeft: Int)
         abstract fun onFinish()
     }
-
 
     fun startTimer(duration: Int){
         timer = object: CountDownTimer(duration*1000L, 1000) {
@@ -57,10 +56,11 @@ class MyApp : Application() {
 
 
             override fun onFinish() {
-                TODO("Not yet implemented")
+                timerRunning = false
             }
         }
         timer.start()
+        timerRunning = true;
     }
 
 }
