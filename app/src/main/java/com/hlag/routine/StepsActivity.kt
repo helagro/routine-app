@@ -1,6 +1,7 @@
 package com.hlag.routine
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,8 +18,9 @@ import java.io.FileReader
 import java.io.IOException
 import java.util.*
 
-class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
+class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener, MyApp.TimerListeners {
     lateinit var routine: Routine
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,11 +67,17 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             routine.steps.add(Step(0, "S"))
             steps_list.adapter?.notifyDataSetChanged()
         }
+
+        (application as MyApp).startTimer(300)
+    }
+
+    override fun onResume() {
+        (application as MyApp).timerListener = this
+        super.onResume()
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
@@ -111,6 +119,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         }
 
         routine = Gson().fromJson<Routine>(text.toString(), Routine::class.java)
+        (application as MyApp).activeRoutine = routine
     }
 
     override fun onItemClick(view: View?, position: Int) {
@@ -127,5 +136,15 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         super.onPause()
 
         MyApp.writeRoutine(this, routine)
+    }
+
+    override fun everySecond(secsLeft: Int) {
+        Log.d("tag", "left:" + secsLeft)
+    }
+
+
+
+    override fun onFinish() {
+        TODO("Not yet implemented")
     }
 }

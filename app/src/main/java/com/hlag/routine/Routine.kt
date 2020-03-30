@@ -9,4 +9,14 @@ data class Routine(var name: String, var steps: @RawValue ArrayList<Step>) : Par
     override fun toString(): String {
         return name
     }
+
+    fun getNext(): Step?{
+        steps.forEach{ step ->
+            if (!step.checked){
+                return step
+            }
+        }
+
+        return null
+    }
 }
