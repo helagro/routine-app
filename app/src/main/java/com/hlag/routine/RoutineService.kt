@@ -1,5 +1,6 @@
 package com.hlag.routine
 
+import android.app.Application
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -7,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.ColorSpace
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -14,17 +16,19 @@ import androidx.core.app.NotificationCompat
 class RoutineService : Service(), MyApp.TimerListeners {
     val TAG = "RoutineService"
     val COMPLETE_ACTION = "complete-action"
-    val TIMER_ID = 0
 
     val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
-            TODO("Not yet implemented")
+            (application as MyApp).nextStep()
+            builder?.color = -16711921
+            builder?.setOnlyAlertOnce(true)
         }
 
     }
 
     var builder: NotificationCompat.Builder? = null
     var mNotificationManager: NotificationManager? = null
+    var TIMER_ID = 0
 
 
     override fun onCreate() {
@@ -46,9 +50,11 @@ class RoutineService : Service(), MyApp.TimerListeners {
             .setSmallIcon(R.drawable.ic_add_black_24dp)
             .setContentTitle("Title")
             .setContentText("Text")
+            .setOnlyAlertOnce(true)
             .addAction(R.drawable.ic_check_box_outline_blank_black_24dp, "Complete", completePendingIntent)
             .setContentIntent(PendingIntent.getActivity(applicationContext, 0, notiIntent, PendingIntent.FLAG_UPDATE_CURRENT))
             .setAutoCancel(true)
+            .setColor(-16711921)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -66,8 +72,8 @@ class RoutineService : Service(), MyApp.TimerListeners {
                 startForeground(TIMER_ID, builder?.build())
             }
             "PAUSE" -> {
-                mNotificationManager!!.notify(TIMER_ID, builder!!.build())
                 stopForeground(true)
+                mNotificationManager?.cancel(TIMER_ID)
             }
             "DESTROY" -> stopSelf()
         }
@@ -85,7 +91,13 @@ class RoutineService : Service(), MyApp.TimerListeners {
     }
 
     override fun onNext() {
-        TODO("Not yet implemented")
+        builder?.setContentTitle((application as MyApp).activeStep!!.text)
+        mNotificationManager!!.notify(TIMER_ID, builder!!.build())
+    }
+
+    override fun onFinished() {
+        builder?.setColor(-60892)?.setOnlyAlertOnce(false)
+        mNotificationManager!!.notify(TIMER_ID, builder!!.build())
     }
 
 

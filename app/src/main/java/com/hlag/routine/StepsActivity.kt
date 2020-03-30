@@ -74,8 +74,6 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             routine.steps.add(Step(0, "S"))
             steps_list.adapter?.notifyDataSetChanged()
         }
-
-        (application as MyApp).startTimer(10)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -97,36 +95,44 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
                 steps_list.adapter?.notifyDataSetChanged()
                 return true
             }
+            R.id.action_start_timer -> {
+                (application as MyApp).nextStep()
+            }
         }
 
         return super.onOptionsItemSelected(item)
     }
 
     private fun readFile(name: String?) {
-        val text = StringBuilder()
+        name?.let {
+            val text = StringBuilder()
 
-        try {
-            val br = BufferedReader(FileReader(File(MyApp.dir, name + ".txt")))
+            try {
+                val br = BufferedReader(FileReader(File(MyApp.dir, name + ".txt")))
 
-            var line: String?
-            while (br.readLine().also { line = it } != null) {
-                text.append(line)
-                text.append('\n')
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    text.append(line)
+                    text.append('\n')
+                }
+                br.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return
             }
-            br.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return
+            routine = Gson().fromJson<Routine>(text.toString(), Routine::class.java)
+            (application as MyApp).activeRoutine = routine
+        }?: run {
+            routine = (application as MyApp).activeRoutine
         }
-
-        routine = Gson().fromJson<Routine>(text.toString(), Routine::class.java)
-        (application as MyApp).activeRoutine = routine
     }
 
 
     override fun onResume() {
         (application as MyApp).timerListener = this
         if (isMyServiceRunning(RoutineService::class.java)) {
+            steps_list.adapter?.notifyDataSetChanged()
+
             val intent = Intent(this, RoutineService::class.java)
             intent.action = "PAUSE"
             startService(intent)
@@ -185,5 +191,9 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
     override fun onNext() {
         steps_list.adapter!!.notifyDataSetChanged()
+    }
+
+    override fun onFinished() {
+
     }
 }

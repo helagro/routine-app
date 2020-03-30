@@ -58,7 +58,7 @@ class MyApp : Application() {
                 ROUTINE_PLAYER
             )
             val priorities = intArrayOf(
-                NotificationManager.IMPORTANCE_HIGH, NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_HIGH, NotificationManager.IMPORTANCE_HIGH
             )
             val descriptions = arrayOf(
                 "For showing errors", "To see steps outside the app"
@@ -84,6 +84,7 @@ class MyApp : Application() {
     interface TimerListeners {
         abstract fun everySecond(secsLeft: Int)
         fun onNext()
+        fun onFinished()
     }
 
     fun startTimer(duration: Int) {
@@ -100,7 +101,7 @@ class MyApp : Application() {
 
             override fun onFinish() {
                 timerRunning = false
-                nextStep()
+                timerListener.onFinished()
             }
         }
         timer.start()
@@ -112,13 +113,13 @@ class MyApp : Application() {
             activeStep!!.checked = true
         }
 
+        //get and start next
         activeStep = activeRoutine.getNext()
+        timerListener.onNext()
         if(activeStep == null){
             return
         }
         startTimer(activeStep!!.duration)
-
-        timerListener.onNext()
     }
 
 }

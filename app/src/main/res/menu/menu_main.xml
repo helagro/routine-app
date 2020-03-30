@@ -15,4 +15,8 @@
         android:id="@+id/action_uncheck"
         android:title="Uncheck all"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_start_timer"
+        android:title="Start timer"
+        app:showAsAction="never"/>
 </menu>
