@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_steps.*
+import kotlinx.android.synthetic.main.step_edit_dialog.*
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -24,6 +25,7 @@ import java.util.*
 
 class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener,
     MyApp.TimerListeners {
+    val TAG = "StepsActivity"
     lateinit var routine: Routine
 
 
@@ -73,7 +75,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             steps_list.adapter?.notifyDataSetChanged()
         }
 
-        (application as MyApp).startTimer(300)
+        (application as MyApp).startTimer(10)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -145,37 +147,43 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
 
     override fun onItemClick(view: View?, position: Int) {
-        val textDialog = TextDialog(this)
-        textDialog.editText.setText(routine.steps.get(position).text)
-        textDialog.setOnDismissListener {
-            val text = textDialog.editText.text.toString()
-            routine.steps.get(position).text = text
+        val stepDialog = StepEditDialog(this)
+        val step = routine.steps.get(position)
+
+        stepDialog.step_name_edit.setText(step.text)
+        stepDialog.step_minutes_edit.setText(step.duration.toString())
+
+        stepDialog.setOnDismissListener {
+            val text = stepDialog.step_name_edit.text.toString()
+            val duration = stepDialog.step_minutes_edit.text.toString().toInt()
+
+            step.text = text
+            step.duration = duration
+
             steps_list.adapter?.notifyItemChanged(position)
         }
     }
 
     override fun onPause() {
         super.onPause()
-        val intent = Intent(this, RoutineService::class.java)
 
+        //Contact with service
+        val intent = Intent(this, RoutineService::class.java)
         if ((application as MyApp).timerRunning) {
             intent.action = "START"
         } else if (isMyServiceRunning(RoutineService::class.java)) {
             intent.action = "DESTROY"
         }
-
-
         startService(intent)
 
         MyApp.writeRoutine(this, routine)
     }
 
     override fun everySecond(secsLeft: Int) {
-        //Log.d("tag", "left:" + secsLeft)
+        Log.d(TAG, secsLeft.toString())
     }
 
-
-    override fun onFinish() {
-        TODO("Not yet implemented")
+    override fun onNext() {
+        steps_list.adapter!!.notifyDataSetChanged()
     }
 }
