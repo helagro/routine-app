@@ -78,18 +78,18 @@ class MyApp : Application() {
     var activeStep: Step? = null
 
     lateinit var timerListener: TimerListeners
-    private lateinit var timer: CountDownTimer
-    var timerRunning = false
+    private var timer: CountDownTimer? = null
+    var timed = false
 
     interface TimerListeners {
         abstract fun everySecond(secsLeft: Int)
-        fun onNext()
         fun onFinished()
+        fun onDone()
     }
 
     fun startTimer(duration: Int) {
-        if(timerRunning){
-            timer.cancel()
+        timer?.let {
+            timer?.cancel()
         }
 
         timer = object : CountDownTimer(duration * 1000L, 1000) {
@@ -98,14 +98,13 @@ class MyApp : Application() {
                 timerListener.everySecond((p0 / 1000).toInt())
             }
 
-
             override fun onFinish() {
-                timerRunning = false
                 timerListener.onFinished()
             }
         }
-        timer.start()
-        timerRunning = true
+
+        timer?.start()
+        timed = true
     }
 
     fun nextStep(){
@@ -115,11 +114,14 @@ class MyApp : Application() {
 
         //get and start next
         activeStep = activeRoutine.getNext()
-        timerListener.onNext()
         if(activeStep == null){
-            return
+            timer?.cancel()
+            timerListener.onDone()
+            timed = false
         }
-        startTimer(activeStep!!.duration)
+        else{
+            startTimer(activeStep!!.duration)
+        }
     }
 
 }

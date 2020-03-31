@@ -34,10 +34,12 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         setContentView(R.layout.activity_steps)
         setSupportActionBar(toolbar)
 
+        //get routine
         val routineName: String? = intent.getStringExtra("routine_name")
         title = routineName
         readFile(routineName)
 
+        //setup steps ui
         steps_list.layoutManager = LinearLayoutManager(this)
         val stepAdapter = MyRecyclerViewAdapter(this, routine.steps)
         stepAdapter.setClickListener(this)
@@ -122,11 +124,10 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             }
             routine = Gson().fromJson<Routine>(text.toString(), Routine::class.java)
             (application as MyApp).activeRoutine = routine
-        }?: run {
+        }?: run {//when oncreate called from notification intent
             routine = (application as MyApp).activeRoutine
         }
     }
-
 
     override fun onResume() {
         (application as MyApp).timerListener = this
@@ -175,7 +176,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
         //Contact with service
         val intent = Intent(this, RoutineService::class.java)
-        if ((application as MyApp).timerRunning) {
+        if ((application as MyApp).timed) {
             intent.action = "START"
         } else if (isMyServiceRunning(RoutineService::class.java)) {
             intent.action = "DESTROY"
@@ -189,11 +190,11 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         Log.d(TAG, secsLeft.toString())
     }
 
-    override fun onNext() {
-        steps_list.adapter!!.notifyDataSetChanged()
+    override fun onFinished() {
+
     }
 
-    override fun onFinished() {
+    override fun onDone() {
 
     }
 }
