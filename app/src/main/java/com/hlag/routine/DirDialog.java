@@ -105,7 +105,7 @@ public class DirDialog extends AppCompatDialogFragment {
         select = view.findViewById(R.id.dir_select);
         select.setOnClickListener(view12 -> {
             String finalDir = getThisDir().getAbsolutePath();
-            MyApp.Companion.setDir(getThisDir().getAbsolutePath());
+            FileManager.Companion.setDir(getThisDir().getAbsolutePath());
 
             MyApp.Companion.getSp(getContext()).edit().putString("prjDir", finalDir).apply();
             dismiss();

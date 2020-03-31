@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                 val text = dialog.editText.text.toString()
                 val routine = Routine(text, ArrayList<Step>())
 
-                MyApp.writeRoutine(this, routine)
+                FileManager.writeRoutine(this, routine)
 
                 routines.add(routine)
                 (routines_gridview.adapter as RoutineAdapter).notifyDataSetChanged()
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadFromStorage(){
-        val dir = File(MyApp.dir)
+        val dir = File(FileManager.dir)
         for(file in dir.listFiles()){
             routines.add(Routine(file.nameWithoutExtension, ArrayList<Step>()))
         }

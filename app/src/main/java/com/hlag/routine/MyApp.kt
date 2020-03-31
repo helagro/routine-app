@@ -20,21 +20,10 @@ class MyApp : Application() {
     companion object {
         val ERROR_CHAN = "Errors"
         val ROUTINE_PLAYER = "Routine player"
-        var dir = "/storage/emulated/0/Mega Sync/Routines"
 
         fun getSp(context: Context): SharedPreferences {
             return Objects.requireNonNull(context)
                 .getSharedPreferences("prefs", Activity.MODE_PRIVATE)
-        }
-
-        fun writeRoutine(context: Context, routine: Routine) {
-            val text = Gson().toJson(routine).toString()
-            val file = File(dir, routine.name + ".txt")
-
-            val fileOutputStream = FileOutputStream(file)
-            fileOutputStream.use { fileOutputStream ->
-                fileOutputStream.write(text.toByteArray())
-            }
         }
     }
 
@@ -43,7 +32,7 @@ class MyApp : Application() {
         super.onCreate()
 
         val sp = getSp(this)
-        dir = sp.getString("prjDir", "/storage/emulated/0/Mega Sync/Routines").toString()
+        FileManager.dir = sp.getString("prjDir", "/storage/emulated/0/Mega Sync/Routines").toString()
 
         //first setup
         if (sp.getBoolean("first", true) || true) {  //only debug
