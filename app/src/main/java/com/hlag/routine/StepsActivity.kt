@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -94,8 +95,17 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
                 return true
             }
             R.id.action_uncheck -> {
-                routine.steps.forEach { step -> step.checked = false }
+                routine.steps.forEachIndexed{ i,step ->
+                    step.checked = false
+                    //steps_list.adapter?.notifyDataSetChanged()
+                    Log.d(TAG, "{${step.checked}, ${step.text}")
+                }
                 steps_list.adapter?.notifyDataSetChanged()
+
+                Handler().postDelayed({ //no idea why this is needed
+                    steps_list.adapter?.notifyDataSetChanged()
+                }, 1)
+
                 return true
             }
             R.id.action_start_timer -> {
