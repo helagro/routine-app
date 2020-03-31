@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/step_name_edit" />
 
@@ -15,5 +15,23 @@
         android:hint="Minutes"
         android:inputType="number"
         android:layout_below="@id/step_name_edit"/>
+
+    <EditText
+        android:id="@+id/step_seconds_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Seconds"
+        android:inputType="number"
+        android:layout_below="@id/step_name_edit"
+        android:layout_toRightOf="@id/step_minutes_edit"
+        android:layout_alignParentRight="true"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/step_delete"
+        android:layout_below="@id/step_minutes_edit"
+        android:text="Delete"
+        />
 
 </RelativeLayout>

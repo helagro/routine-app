@@ -21,6 +21,7 @@ import java.io.File
 import java.io.FileReader
 import java.io.IOException
 import java.util.*
+import kotlin.math.floor
 
 
 class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener,
@@ -158,16 +159,19 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         val step = routine.steps.get(position)
 
         stepDialog.step_name_edit.setText(step.text)
-        stepDialog.step_minutes_edit.setText(step.duration.toString())
+        stepDialog.step_minutes_edit.setText(floor(step.duration/60f).toInt().toString() )
+        stepDialog.step_seconds_edit.setText((step.duration % 60).toString())
 
         stepDialog.setOnDismissListener {
-            val text = stepDialog.step_name_edit.text.toString()
-            val duration = stepDialog.step_minutes_edit.text.toString().toInt()
+            if(stepDialog.delete){
+                routine.steps.remove(step)
+                steps_list.adapter?.notifyItemRemoved(position)
+            } else{
+                step.text = stepDialog.step_name_edit.text.toString()
+                step.duration = stepDialog.getDuration()
 
-            step.text = text
-            step.duration = duration
-
-            steps_list.adapter?.notifyItemChanged(position)
+                steps_list.adapter?.notifyItemChanged(position)
+            }
         }
     }
 

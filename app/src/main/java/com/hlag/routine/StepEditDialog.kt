@@ -11,10 +11,19 @@ class StepEditDialog(context: Context) : Dialog(context) {
         show()
     }
 
+    var delete = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.step_edit_dialog)
 
+        step_delete.setOnClickListener {
+            delete = true
+            dismiss()
+        }
+    }
+
+    public fun getDuration(): Int{
+        return step_minutes_edit.text.toString().toInt() * 60 + step_seconds_edit.text.toString().toInt()
     }
 }
