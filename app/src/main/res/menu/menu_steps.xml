@@ -8,7 +8,15 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_setFolder"
-        android:title="Set folder"
+        android:id="@+id/action_delete"
+        android:title="Delete"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_uncheck"
+        android:title="Uncheck all"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_start_timer"
+        android:title="Start timer"
+        app:showAsAction="never"/>
 </menu>

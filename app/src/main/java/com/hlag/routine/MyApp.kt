@@ -42,9 +42,11 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        //first setup
         val sp = getSp(this)
-        if (sp.getBoolean("first", true) || true) {  //only debugg
+        dir = sp.getString("prjDir", "/storage/emulated/0/Mega Sync/Routines").toString()
+
+        //first setup
+        if (sp.getBoolean("first", true) || true) {  //only debug
             firstSetup()
             sp.edit().putBoolean("first", false).apply()
         }

@@ -4,16 +4,16 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.AdapterView
-import android.widget.GridView
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentManager
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.fab
+import kotlinx.android.synthetic.main.activity_main.toolbar
+import kotlinx.android.synthetic.main.activity_steps.*
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -59,10 +59,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+
+        when (item.itemId) {
+            R.id.action_settings -> {
+                return true
+            }
+            R.id.action_setFolder -> {
+                DirDialog().show(supportFragmentManager, "tag")
+            }
         }
+
+        return super.onOptionsItemSelected(item)
     }
 
     fun loadFromStorage(){
