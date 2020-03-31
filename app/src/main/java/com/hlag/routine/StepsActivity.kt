@@ -35,6 +35,8 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_steps)
         setSupportActionBar(toolbar)
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
 
         //get routine
         val routineName: String? = intent.getStringExtra("routine_name")
@@ -97,7 +99,6 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
             R.id.action_uncheck -> {
                 routine.steps.forEachIndexed{ i,step ->
                     step.checked = false
-                    //steps_list.adapter?.notifyDataSetChanged()
                     Log.d(TAG, "{${step.checked}, ${step.text}")
                 }
                 steps_list.adapter?.notifyDataSetChanged()
@@ -183,6 +184,13 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
                 steps_list.adapter?.notifyItemChanged(position)
             }
         }
+    }
+
+
+    override fun onSupportNavigateUp(): Boolean {
+        Intent(this, MainActivity::class.java)
+        finish()
+        return true
     }
 
     override fun onPause() {
