@@ -76,6 +76,7 @@ class MyApp : Application() {
     }
 
 
+
     lateinit var activeRoutine: Routine
     var activeStep: Step? = null
 
@@ -89,12 +90,10 @@ class MyApp : Application() {
         fun onDone()
     }
 
-    fun startTimer(duration: Int) {
-        timer?.let {
-            timer?.cancel()
-        }
+    fun startTimer(step: Step) {
+        timer?.cancel()
 
-        timer = object : CountDownTimer(duration * 1000L, 1000) {
+        timer = object : CountDownTimer(step.duration * 1000L, 1000) {
 
             override fun onTick(p0: Long) {
                 timerListener.everySecond((p0 / 1000).toInt())
@@ -105,14 +104,13 @@ class MyApp : Application() {
             }
         }
 
-        timer?.start()
+        timer!!.start()
         timed = true
+        activeStep = step
     }
 
     fun nextStep(){
-        activeStep?.let {
-            activeStep!!.checked = true
-        }
+        activeStep?.checked = true
 
         //get and start next
         activeStep = activeRoutine.getNext()
@@ -122,8 +120,7 @@ class MyApp : Application() {
             timed = false
         }
         else{
-            startTimer(activeStep!!.duration)
+            startTimer(activeStep!!)
         }
     }
-
 }

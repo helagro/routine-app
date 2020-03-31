@@ -25,27 +25,102 @@ import java.util.*
 import kotlin.math.floor
 
 
-class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener,
+class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     MyApp.TimerListeners {
     val TAG = "StepsActivity"
+    lateinit var app : MyApp
     lateinit var routine: Routine
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Standard activity things
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_steps)
         setSupportActionBar(toolbar)
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        app = (application as MyApp)
 
         //get routine
         val routineName: String? = intent.getStringExtra("routine_name")
         title = routineName
         readFile(routineName)
 
+        setupRecycler()
+
+        step_check_view.setOnClickListener {
+            nextStep()
+        }
+
+        fab.setOnClickListener { view ->
+            routine.steps.add(Step(0, "S"))
+            steps_list.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_steps, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.action_settings -> {
+                return true
+            }
+            R.id.action_delete -> {
+                return true
+            }
+            R.id.action_uncheck -> {
+                routine.steps.forEachIndexed{ i,step ->
+                    step.checked = false
+                }
+                steps_list.adapter?.notifyDataSetChanged()
+
+                Handler().postDelayed({ //no idea why this is needed
+                    steps_list.adapter?.notifyDataSetChanged()
+                }, 1)
+
+                return true
+            }
+            R.id.action_start_timer -> {
+                nextStep()
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun readFile(name: String?) {
+        name?.let {
+            val text = StringBuilder()
+
+            try {
+                val br = BufferedReader(FileReader(File(MyApp.dir, name + ".txt")))
+
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    text.append(line)
+                    text.append('\n')
+                }
+                br.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return
+            }
+            routine = Gson().fromJson<Routine>(text.toString(), Routine::class.java)
+            app.activeRoutine = routine
+        }?: run {//when oncreate called from notification intent
+            routine = (application as MyApp).activeRoutine
+        }
+    }
+
+    fun setupRecycler(){
         //setup steps ui
         steps_list.layoutManager = LinearLayoutManager(this)
-        val stepAdapter = MyRecyclerViewAdapter(this, routine.steps)
+        val stepAdapter = StepsAdapter(this, routine.steps)
         stepAdapter.setClickListener(this)
         steps_list.adapter = stepAdapter
 
@@ -76,73 +151,25 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         steps_list.addItemDecoration(divider)
 
-        fab.setOnClickListener { view ->
-            routine.steps.add(Step(0, "S"))
-            steps_list.adapter?.notifyDataSetChanged()
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_steps, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when (item.itemId) {
-            R.id.action_settings -> {
-                return true
+        stepAdapter.stepAdapterListener = object : StepsAdapter.StepAdapterListener {
+            override fun onPlay(step: Step) {
+                app.activeStep = step
+                app.startTimer(step)
+                step_name_view.setText(app.activeStep!!.text)
+                steps_list.adapter!!.notifyDataSetChanged()
             }
-            R.id.action_delete -> {
-                return true
-            }
-            R.id.action_uncheck -> {
-                routine.steps.forEachIndexed{ i,step ->
-                    step.checked = false
-                    Log.d(TAG, "{${step.checked}, ${step.text}")
+
+            override fun onChecked(step: Step?) {
+                if(step!! == app.activeStep){
+                    nextStep()
                 }
-                steps_list.adapter?.notifyDataSetChanged()
-
-                Handler().postDelayed({ //no idea why this is needed
-                    steps_list.adapter?.notifyDataSetChanged()
-                }, 1)
-
-                return true
             }
-            R.id.action_start_timer -> {
-                (application as MyApp).nextStep()
-            }
-        }
 
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun readFile(name: String?) {
-        name?.let {
-            val text = StringBuilder()
-
-            try {
-                val br = BufferedReader(FileReader(File(MyApp.dir, name + ".txt")))
-
-                var line: String?
-                while (br.readLine().also { line = it } != null) {
-                    text.append(line)
-                    text.append('\n')
-                }
-                br.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return
-            }
-            routine = Gson().fromJson<Routine>(text.toString(), Routine::class.java)
-            (application as MyApp).activeRoutine = routine
-        }?: run {//when oncreate called from notification intent
-            routine = (application as MyApp).activeRoutine
         }
     }
 
     override fun onResume() {
-        (application as MyApp).timerListener = this
+        app.timerListener = this
         if (isMyServiceRunning(RoutineService::class.java)) {
             steps_list.adapter?.notifyDataSetChanged()
 
@@ -188,7 +215,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
 
     override fun onSupportNavigateUp(): Boolean {
-        Intent(this, MainActivity::class.java)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
         return true
     }
@@ -198,7 +225,7 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
 
         //Contact with service
         val intent = Intent(this, RoutineService::class.java)
-        if ((application as MyApp).timed) {
+        if (app.timed) {
             intent.action = "START"
         } else if (isMyServiceRunning(RoutineService::class.java)) {
             intent.action = "DESTROY"
@@ -208,8 +235,14 @@ class StepsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListen
         MyApp.writeRoutine(this, routine)
     }
 
+    fun nextStep(){
+        app.nextStep()
+        step_name_view.setText(app.activeStep!!.text)
+        steps_list.adapter!!.notifyDataSetChanged()
+    }
+
     override fun everySecond(secsLeft: Int) {
-        Log.d(TAG, secsLeft.toString())
+        step_time_view.setText(secsLeft.toString())
     }
 
     override fun onFinished() {
