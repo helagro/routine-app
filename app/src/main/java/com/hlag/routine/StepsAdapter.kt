@@ -9,12 +9,11 @@ import android.widget.CompoundButton
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.step_row.view.*
 
 class StepsAdapter internal constructor(context: Context?, data: List<Step>) : RecyclerView.Adapter<StepsAdapter.ViewHolder>() {
     interface StepAdapterListener {
-        fun onPlay(step: Step)
-        fun onChecked(step: Step?)
+        fun onItemPlayPressed(step: Step)
+        fun onItemChecked(step: Step?)
     }
     var stepAdapterListener: StepAdapterListener? = null
 
@@ -66,7 +65,7 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) : R
         }
 
         holder.playBtn.setOnClickListener {
-            stepAdapterListener!!.onPlay(step)
+            stepAdapterListener!!.onItemPlayPressed(step)
         }
     }
 

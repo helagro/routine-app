@@ -8,10 +8,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.CountDownTimer
-import com.google.gson.Gson
-import java.io.File
-import java.io.FileOutputStream
-import java.lang.Exception
 import java.util.*
 
 
@@ -76,7 +72,7 @@ class MyApp : Application() {
     interface TimerListeners {
         abstract fun everySecond(secsLeft: Int)
         fun onFinished()
-        fun onDone()
+        fun onAllStepsFinished()
     }
 
     fun startTimer(step: Step) {
@@ -105,7 +101,7 @@ class MyApp : Application() {
         activeStep = activeRoutine.getNext()
         if(activeStep == null){
             timer?.cancel()
-            timerListener.onDone()
+            timerListener.onAllStepsFinished()
             timed = false
         }
         else{

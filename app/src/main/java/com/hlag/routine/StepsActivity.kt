@@ -127,12 +127,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         }
     }
 
-    fun nextStep() {
-        app.nextStep()
-        step_name_view.setText(app.activeStep!!.text)
-        steps_list.adapter!!.notifyDataSetChanged()
-    }
-
     override fun everySecond(secsLeft: Int) {
         step_time_view.text = secsLeft.toString()
     }
@@ -141,23 +135,24 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     }
 
-    override fun onDone() {
+    override fun onAllStepsFinished() {
 
     }
 
-    override fun onPlay(step: Step) {
+    override fun onItemPlayPressed(step: Step) {
         app.activeStep = step
         app.startTimer(step)
-        step_name_view.setText(app.activeStep!!.text)
+        step_name_view.text = app.activeStep!!.text
         steps_list.adapter!!.notifyDataSetChanged()
     }
 
-    override fun onChecked(step: Step?) {
+    override fun onItemChecked(step: Step?) {
         if (step!! == app.activeStep) {
             nextStep()
         }
     }
 
+    //Back arrow
     override fun onSupportNavigateUp(): Boolean {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
@@ -172,6 +167,12 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
                 steps_list.adapter?.notifyDataSetChanged()
             }
         }
+    }
+
+    fun nextStep() {
+        steps_list.adapter!!.notifyDataSetChanged()
+        app.nextStep()
+        step_name_view.text = app.activeStep?.text
     }
 
     override fun onPause() {

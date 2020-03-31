@@ -128,6 +128,6 @@ class RoutineService : Service(), MyApp.TimerListeners {
         mNotificationManager?.cancel(TIMER_ID)
     }
 
-    override fun onDone() {
+    override fun onAllStepsFinished() {
     }
 }
