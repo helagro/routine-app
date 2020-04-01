@@ -42,12 +42,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/step_name_view"
-            android:text="FESESF"
+            android:text="..."
+            android:textSize="40dp"
             android:layout_centerInParent="true"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/step_time_view"
+            android:textSize="30dp"
             android:layout_alignParentRight="true"/>
 
     </RelativeLayout>

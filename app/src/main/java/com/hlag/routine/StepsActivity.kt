@@ -69,6 +69,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         app.timerListener = this
         if (GeneralHelpers.isMyServiceRunning(this, RoutineService::class.java)) {
             steps_list.adapter?.notifyDataSetChanged()
+            updatePlayer()
 
             val intent = Intent(this, RoutineService::class.java)
             intent.action = "PAUSE"
@@ -90,7 +91,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
                 routine.steps.forEachIndexed { i, step ->
                     step.checked = false
                 }
-                steps_list.adapter?.notifyDataSetChanged()
 
                 steps_list.post {
                     steps_list.adapter!!.notifyDataSetChanged()
@@ -105,7 +105,9 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         return super.onOptionsItemSelected(item)
     }
 
-
+    /*
+    From list
+    */
     override fun onItemClick(view: View?, position: Int) {
         val stepDialog = StepEditDialog(this)
         val step = routine.steps.get(position)
@@ -127,6 +129,22 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         }
     }
 
+    override fun onItemPlayPressed(step: Step) {
+        app.activeStep = step
+        app.startTimer(step)
+        updatePlayer()
+    }
+
+    override fun onItemChecked(step: Step?) {
+        if (step!! == app.activeStep) {
+            nextStep()
+        }
+    }
+
+
+    /*
+    From Timer
+     */
     override fun everySecond(secsLeft: Int) {
         step_time_view.text = secsLeft.toString()
     }
@@ -139,17 +157,11 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     }
 
-    override fun onItemPlayPressed(step: Step) {
-        app.activeStep = step
-        app.startTimer(step)
-        step_name_view.text = app.activeStep!!.text
-    }
 
-    override fun onItemChecked(step: Step?) {
-        if (step!! == app.activeStep) {
-            nextStep()
-        }
-    }
+
+    /*
+    Other ui
+     */
 
     //Back arrow
     override fun onSupportNavigateUp(): Boolean {
@@ -164,17 +176,28 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
             fab -> {
                 routine.steps.add(Step(0, ""))
                 steps_list.adapter?.notifyDataSetChanged()
-                Log.d(TAG, "added ${routine}")
             }
         }
     }
 
-    fun nextStep() {
+
+    /*
+    Helpers
+     */
+    private fun nextStep() {
         steps_list.adapter!!.notifyDataSetChanged()
         app.nextStep()
-        step_name_view.text = app.activeStep?.text
     }
 
+    private fun updatePlayer(){
+        step_name_view.text = app.activeStep?.text
+        step_time_view.text = app.activeStep?.duration.toString()
+    }
+
+
+    /*
+    Closing cycle
+     */
     override fun onPause() {
         super.onPause()
 

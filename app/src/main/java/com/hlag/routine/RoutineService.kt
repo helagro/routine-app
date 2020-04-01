@@ -89,6 +89,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
                 (application as MyApp).timerListener = this
                 updateNotificationStep()
                 startForeground(TIMER_ID, builder?.build())
+                mNotificationManager!!.notify(TIMER_ID, builder!!.build())
             }
             "PAUSE" -> {
                 stopForeground(true)

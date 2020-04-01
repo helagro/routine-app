@@ -103,6 +103,7 @@ class MyApp : Application() {
             timer?.cancel()
             timerListener.onAllStepsFinished()
             timed = false
+            activeStep = null
         }
         else{
             startTimer(activeStep!!)

@@ -47,7 +47,6 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) :
         position: Int
     ) {
         val step = mData[position]
-        Log.d(TAG, "${step.text} ${step.checked}  ${holder.myTextView.text}")
 
         //set visibility
         val visibility = if (step.checked) invisible else visible
@@ -62,7 +61,7 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) :
 
         holder.checkBtn.setOnClickListener { v ->
             step.checked = true
-            Log.d(TAG, "${step.text}  ${mData}")
+            stepAdapterListener!!.onItemChecked(step)
 
             //hides checked item
             holder.itemView.visibility = visible[0]
@@ -70,7 +69,6 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) :
             params2.height = 0
             params2.width = 0
             holder.itemView.layoutParams = params2
-
         }
 
         holder.playBtn.setOnClickListener {
