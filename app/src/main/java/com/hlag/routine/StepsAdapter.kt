@@ -1,6 +1,7 @@
 package com.hlag.routine
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,15 +10,19 @@ import android.widget.CompoundButton
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.log
 
-class StepsAdapter internal constructor(context: Context?, data: List<Step>) : RecyclerView.Adapter<StepsAdapter.ViewHolder>() {
+class StepsAdapter internal constructor(context: Context?, data: List<Step>) :
+    RecyclerView.Adapter<StepsAdapter.ViewHolder>() {
     interface StepAdapterListener {
         fun onItemPlayPressed(step: Step)
         fun onItemChecked(step: Step?)
     }
+
     var stepAdapterListener: StepAdapterListener? = null
 
     private val mData: List<Step> = data
+    private val TAG = "StepsAdapter"
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: ItemClickListener? = null
     private val visible = intArrayOf(
@@ -42,7 +47,9 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) : R
         position: Int
     ) {
         val step = mData[position]
+        Log.d(TAG, "${step.text} ${step.checked}  ${holder.myTextView.text}")
 
+        //set visibility
         val visibility = if (step.checked) invisible else visible
         holder.itemView.visibility = visibility[0]
         val params = holder.itemView.layoutParams
@@ -50,11 +57,12 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) : R
         params.height = visibility[2]
         holder.itemView.layoutParams = params
 
-        holder.myTextView.text = step.text
-        holder.myCheckbox.isChecked = step.checked
 
-        holder.myCheckbox.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-            step.checked = compoundButton.isChecked
+        holder.myTextView.text = step.text
+
+        holder.checkBtn.setOnClickListener { v ->
+            step.checked = true
+            Log.d(TAG, "${step.text}  ${mData}")
 
             //hides checked item
             holder.itemView.visibility = visible[0]
@@ -62,6 +70,7 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) : R
             params2.height = 0
             params2.width = 0
             holder.itemView.layoutParams = params2
+
         }
 
         holder.playBtn.setOnClickListener {
@@ -79,7 +88,7 @@ class StepsAdapter internal constructor(context: Context?, data: List<Step>) : R
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var playBtn: ImageButton = itemView.findViewById(R.id.step_play_row)
         var myTextView: TextView = itemView.findViewById(R.id.tvAnimalName)
-        var myCheckbox: CheckBox = itemView.findViewById(R.id.step_finished)
+        var checkBtn: ImageButton = itemView.findViewById(R.id.step_finished)
         override fun onClick(view: View) {
             if (mClickListener != null) mClickListener!!.onItemClick(view, adapterPosition)
         }

@@ -143,7 +143,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         app.activeStep = step
         app.startTimer(step)
         step_name_view.text = app.activeStep!!.text
-        steps_list.adapter!!.notifyDataSetChanged()
     }
 
     override fun onItemChecked(step: Step?) {
@@ -163,8 +162,9 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         when (v) {
             step_check_view -> nextStep()
             fab -> {
-                routine.steps.add(Step(0, "S"))
+                routine.steps.add(Step(0, ""))
                 steps_list.adapter?.notifyDataSetChanged()
+                Log.d(TAG, "added ${routine}")
             }
         }
     }
