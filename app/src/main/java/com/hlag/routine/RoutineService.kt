@@ -26,7 +26,6 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
             application.activeStep?.let {
                 updateNotificationStep()
-                mNotificationManager!!.notify(TIMER_ID, builder!!.build())
 
             } ?: run {//Done all steps
                 stopSelf()
@@ -36,7 +35,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
     var builder: NotificationCompat.Builder? = null
     var mNotificationManager: NotificationManager? = null
-    var TIMER_ID = 0
+    var TIMER_ID = 1 //can't be 0 for some reason
 
 
     override fun onCreate() {
@@ -89,7 +88,6 @@ class RoutineService : Service(), MyApp.TimerListeners {
                 (application as MyApp).timerListener = this
                 updateNotificationStep()
                 startForeground(TIMER_ID, builder?.build())
-                mNotificationManager!!.notify(TIMER_ID, builder!!.build())
             }
             "PAUSE" -> {
                 stopForeground(true)
@@ -104,9 +102,12 @@ class RoutineService : Service(), MyApp.TimerListeners {
     }
 
     fun updateNotificationStep(){
+        val activeStep = (application as MyApp).activeStep!!
+
         builder?.color = -16711921
         builder?.setOnlyAlertOnce(true)
-        builder?.setContentTitle((application as MyApp).activeStep!!.text)
+        builder?.setContentTitle(activeStep.text)
+        everySecond(activeStep.duration)
     }
 
 

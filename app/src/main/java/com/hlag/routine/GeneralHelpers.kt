@@ -2,6 +2,8 @@ package com.hlag.routine
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 
 class GeneralHelpers {
     companion object {
@@ -14,6 +16,17 @@ class GeneralHelpers {
                 }
             }
             return false
+        }
+
+        fun startForeground(context: Context, serviceClass: Class<*>, action: String) {
+            val intent = Intent(context, RoutineService::class.java)
+            intent.action = action
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            }
+            else{
+                context.startService(intent)
+            }
         }
     }
 }

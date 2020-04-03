@@ -3,6 +3,7 @@ package com.hlag.routine
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -71,9 +72,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
             steps_list.adapter?.notifyDataSetChanged()
             updatePlayer()
 
-            val intent = Intent(this, RoutineService::class.java)
-            intent.action = "PAUSE"
-            startService(intent)
+            GeneralHelpers.startForeground(this, RoutineService::class.java, "PAUSE")
         }
         super.onResume()
     }
@@ -202,13 +201,13 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         super.onPause()
 
         //Contact with service
-        val intent = Intent(this, RoutineService::class.java)
         if (app.timed) {
-            intent.action = "START"
+            GeneralHelpers.startForeground(this, RoutineService::class.java, "START")
+
         } else if (GeneralHelpers.isMyServiceRunning(this, RoutineService::class.java)) {
-            intent.action = "DESTROY"
+            GeneralHelpers.startForeground(this, RoutineService::class.java, "DESTROY")
         }
-        startService(intent)
+
 
         FileManager.writeRoutine(this, routine)
     }
