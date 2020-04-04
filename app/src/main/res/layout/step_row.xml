@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -10,26 +8,31 @@
     android:paddingHorizontal="16dp">
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:id="@+id/step_play_row"
         android:src="@drawable/ic_play_arrow_black_24dp"
+        android:background="@null"
+        android:scaleType="fitXY"
         />
 
     <TextView
+        android:layout_marginLeft="10dp"
         android:id="@+id/tvAnimalName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/step_play_row"
         android:textSize="20sp"
-        android:layout_marginRight="30dp"/>
+        android:layout_marginRight="30dp" />
 
     <ImageButton
         android:id="@+id/step_finished"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_check_box_outline_blank_black_24dp"
+        android:background="@null"
+        android:scaleType="fitXY"
         />
 
 </RelativeLayout>

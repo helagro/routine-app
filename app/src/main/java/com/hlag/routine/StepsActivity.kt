@@ -98,7 +98,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
                 return true
             }
             R.id.action_start_timer -> {
-                nextStep()
+                app.stopTimer()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -189,7 +189,8 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     private fun updatePlayer(){
-        step_name_view.text = app.activeStep?.text
+        Log.d(TAG, app.activeStep!!.text)
+        step_name_view.text = app.activeStep!!.text
         step_time_view.text = app.activeStep?.duration.toString()
     }
 

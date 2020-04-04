@@ -17,6 +17,6 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_start_timer"
-        android:title="Start timer"
+        android:title="Stop timer"
         app:showAsAction="never"/>
 </menu>

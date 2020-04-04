@@ -100,13 +100,17 @@ class MyApp : Application() {
         //get and start next
         activeStep = activeRoutine.getNext()
         if(activeStep == null){
-            timer?.cancel()
-            timerListener.onAllStepsFinished()
-            timed = false
-            activeStep = null
+            stopTimer()
         }
         else{
             startTimer(activeStep!!)
         }
+    }
+
+    fun stopTimer(){
+        timer?.cancel()
+        timerListener.onAllStepsFinished()
+        timed = false
+        activeStep = null
     }
 }
