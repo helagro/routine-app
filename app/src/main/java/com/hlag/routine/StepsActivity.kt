@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -58,6 +59,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         ViewFacory.setupRecycler(this, steps_list)
 
         step_check_view.setOnClickListener(this)
+        step_name_view.setTextIsSelectable(true)
         fab.setOnClickListener(this)
     }
 
@@ -189,8 +191,8 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     private fun updatePlayer(){
-        Log.d(TAG, app.activeStep!!.text)
         step_name_view.text = app.activeStep!!.text
+        Log.d(TAG, step_name_view!!.text.toString())
         step_time_view.text = app.activeStep?.duration.toString()
     }
 
