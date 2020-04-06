@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.CountDownTimer
+import android.util.Log
 import java.util.*
 
 
@@ -87,8 +88,10 @@ class MyApp : Application() {
             }
 
             override fun onFinish() {
-                overDue = true
-                timerListener.onFinished()
+                if(activeStep?.duration != 0){
+                    overDue = true
+                    timerListener.onFinished()
+                }
             }
         }
 

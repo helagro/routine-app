@@ -20,12 +20,12 @@ import java.util.*
 
 class RoutineService : Service(), MyApp.TimerListeners {
     companion object{
-        val TAG = "RoutineService"
-        val COMPLETE_ACTION = "complete-action"
-    }
+        const val TAG = "RoutineService"
+        const val COMPLETE_ACTION = "complete-action"
 
-    private val TIMER_ID = 1 //can't be 0 for some reason
-    private val OVERDUE_TIMER_DELAY = 5*60*10L
+        const val TIMER_ID = 1
+        const val OVERDUE_TIMER_DELAY = 5*60*1000L
+    }
 
     private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) { //complete button
@@ -41,9 +41,9 @@ class RoutineService : Service(), MyApp.TimerListeners {
         }
     }
 
-    lateinit var vibrator: Vibrator
-    var builder: NotificationCompat.Builder? = null
-    var mNotificationManager: NotificationManager? = null
+    private lateinit var vibrator: Vibrator
+    private var builder: NotificationCompat.Builder? = null
+    private var mNotificationManager: NotificationManager? = null
     lateinit var app: MyApp
 
 
@@ -112,20 +112,19 @@ class RoutineService : Service(), MyApp.TimerListeners {
             "DESTROY" -> stopSelf()
         }
 
-        Log.d(TAG, intent.action)
-
         return super.onStartCommand(intent, flags, startId)
     }
 
 
-    lateinit var overDueTimer : Timer
+    var overDueTimer : Timer? = null
     private fun startOverDueTimer(){
+        overDueTimer?.cancel()
         overDueTimer = Timer()
 
-        overDueTimer.scheduleAtFixedRate(object : TimerTask() {
+        overDueTimer!!.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 if (!app.overDue){
-                    overDueTimer.cancel()
+                    overDueTimer!!.cancel()
                 } else{
                     notifyUser()
                 }
@@ -144,7 +143,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
     fun notifyUser(){
         try {
-            val notification: Uri = Uri.parse("android.resource://com.hlag.routine/raw/alert");
+            val notification: Uri = Uri.parse("android.resource://com.hlag.routine/raw/alert")
             val r = RingtoneManager.getRingtone(applicationContext, notification)
             r.play()
         } catch (e: Exception) {
@@ -177,7 +176,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(notificationReceiver)
-        overDueTimer.cancel()
+        overDueTimer?.cancel()
         mNotificationManager?.cancel(TIMER_ID)
     }
 
