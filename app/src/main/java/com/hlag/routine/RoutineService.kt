@@ -25,7 +25,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
     }
 
     private val TIMER_ID = 1 //can't be 0 for some reason
-    private val OVERDUE_TIMER_DELAY = 5*60*1000L
+    private val OVERDUE_TIMER_DELAY = 5*60*10L
 
     private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) { //complete button
@@ -144,7 +144,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
     fun notifyUser(){
         try {
-            val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val notification: Uri = Uri.parse("android.resource://com.hlag.routine/raw/alert");
             val r = RingtoneManager.getRingtone(applicationContext, notification)
             r.play()
         } catch (e: Exception) {
