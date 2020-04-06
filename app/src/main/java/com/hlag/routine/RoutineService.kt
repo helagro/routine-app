@@ -1,6 +1,5 @@
 package com.hlag.routine
 
-import android.app.Application
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -8,10 +7,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.ColorSpace
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
 import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import java.util.*
+
 
 class RoutineService : Service(), MyApp.TimerListeners {
     companion object{
@@ -19,7 +24,10 @@ class RoutineService : Service(), MyApp.TimerListeners {
         val COMPLETE_ACTION = "complete-action"
     }
 
-    val notificationReceiver = object : BroadcastReceiver() {
+    private val TIMER_ID = 1 //can't be 0 for some reason
+    private val OVERDUE_TIMER_DELAY = 5*60*1000L
+
+    private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) { //complete button
             val application = (application as MyApp)
             application.nextStep()
@@ -33,13 +41,17 @@ class RoutineService : Service(), MyApp.TimerListeners {
         }
     }
 
+    lateinit var vibrator: Vibrator
     var builder: NotificationCompat.Builder? = null
     var mNotificationManager: NotificationManager? = null
-    var TIMER_ID = 1 //can't be 0 for some reason
+    lateinit var app: MyApp
 
 
     override fun onCreate() {
         super.onCreate()
+
+        app = application as MyApp
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         //receiver
         val filter = IntentFilter()
@@ -70,6 +82,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
+            .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setColor(-16711921)
     }
@@ -85,9 +98,12 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
         when (intent.action) {
             "START" -> {
-                (application as MyApp).timerListener = this
+                app.timerListener = this
                 updateNotificationStep()
                 startForeground(TIMER_ID, builder?.build())
+                if (app.overDue){
+                    startOverDueTimer()
+                }
             }
             "PAUSE" -> {
                 stopForeground(true)
@@ -101,13 +117,45 @@ class RoutineService : Service(), MyApp.TimerListeners {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    fun updateNotificationStep(){
-        val activeStep = (application as MyApp).activeStep!!
 
-        builder?.color = -16711921
-        builder?.setOnlyAlertOnce(true)
+    lateinit var overDueTimer : Timer
+    private fun startOverDueTimer(){
+        overDueTimer = Timer()
+
+        overDueTimer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                if (!app.overDue){
+                    overDueTimer.cancel()
+                } else{
+                    notifyUser()
+                }
+            }
+        },OVERDUE_TIMER_DELAY, OVERDUE_TIMER_DELAY)
+    }
+
+
+    fun updateNotificationStep(){
+        val activeStep = app.activeStep!!
+
+        builder?.color =  if(app.overDue) -60892 else -16711921
         builder?.setContentTitle(activeStep.text)
         everySecond(activeStep.duration)
+    }
+
+    fun notifyUser(){
+        try {
+            val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val r = RingtoneManager.getRingtone(applicationContext, notification)
+            r.play()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(140, VibrationEffect.EFFECT_DOUBLE_CLICK))
+        }
+        else{
+            vibrator.vibrate(140)
+        }
     }
 
 
@@ -117,9 +165,11 @@ class RoutineService : Service(), MyApp.TimerListeners {
     }
 
     override fun onFinished() {
-        if((application as MyApp).activeStep?.duration != 0){
-            builder?.setColor(-60892)?.setOnlyAlertOnce(false)
+        if(app.activeStep?.duration != 0){
+            builder?.color = -60892
             mNotificationManager!!.notify(TIMER_ID, builder!!.build())
+            notifyUser()
+            startOverDueTimer()
         }
     }
 
@@ -127,6 +177,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(notificationReceiver)
+        overDueTimer.cancel()
         mNotificationManager?.cancel(TIMER_ID)
     }
 

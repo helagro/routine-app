@@ -68,6 +68,7 @@ class MyApp : Application() {
     lateinit var timerListener: TimerListeners
     private var timer: CountDownTimer? = null
     var timed = false
+    var overDue = false
 
     interface TimerListeners {
         abstract fun everySecond(secsLeft: Int)
@@ -77,6 +78,7 @@ class MyApp : Application() {
 
     fun startTimer(step: Step) {
         timer?.cancel()
+        overDue = false
 
         timer = object : CountDownTimer(step.duration * 1000L, 1000) {
 
@@ -85,6 +87,7 @@ class MyApp : Application() {
             }
 
             override fun onFinish() {
+                overDue = true
                 timerListener.onFinished()
             }
         }
