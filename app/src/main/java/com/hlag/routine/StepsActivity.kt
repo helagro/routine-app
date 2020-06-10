@@ -33,6 +33,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     val TAG = "StepsActivity"
     lateinit var app: MyApp
     lateinit var routine: Routine
+    var startTime = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +132,8 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     override fun onItemPlayPressed(step: Step) {
+        startTime = Calendar.getInstance().get(Calendar.MINUTE)
+        Log.d(TAG, "test:" + startTime)
         app.activeStep = step
         app.startTimer(step)
         updatePlayer()
@@ -188,11 +191,11 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     private fun nextStep() {
         steps_list.adapter!!.notifyDataSetChanged()
         app.nextStep()
+        updatePlayer()
     }
 
     private fun updatePlayer(){
         step_name_view.text = app.activeStep!!.text
-        Log.d(TAG, step_name_view!!.text.toString())
         step_time_view.text = app.activeStep?.duration.toString()
     }
 
