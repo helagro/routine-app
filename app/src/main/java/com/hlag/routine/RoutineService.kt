@@ -1,5 +1,6 @@
 package com.hlag.routine
 
+import android.app.AlertDialog
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -14,7 +15,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
-import android.util.Log
+import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import java.util.*
 
@@ -61,7 +62,11 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
         tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             //private var curVol = 0
             override fun onStart(utteranceId: String?) {
-                am.requestAudioFocus(null,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                am.requestAudioFocus(
+                    null,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+                )
 
                 //curVol = am.getStreamVolume(AudioManager.STREAM_MUSIC)
                 //am.setStreamVolume(AudioManager.STREAM_MUSIC, 12, 0)
@@ -211,6 +216,16 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
             mNotificationManager!!.notify(TIMER_ID, builder!!.build())
             notifyUser()
             startOverDueTimer()
+
+            val cal = Calendar.getInstance()
+
+            /*
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Test dialog")
+            builder.setMessage("Content")
+            val alert = builder.create()
+            alert.getWindow()!!.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
+            alert.show()*/
         }
     }
 

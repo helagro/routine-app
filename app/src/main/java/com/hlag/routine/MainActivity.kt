@@ -1,12 +1,17 @@
 package com.hlag.routine
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentManager
 
@@ -24,8 +29,15 @@ class MainActivity : AppCompatActivity() {
 
         //Permissions
         if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0);
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
             return
+        }
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            ActivityCompat.startActivityForResult(this, intent, 0, null)
         }
 
         setContentView(R.layout.activity_main)
@@ -62,6 +74,12 @@ class MainActivity : AppCompatActivity() {
 
         when (item.itemId) {
             R.id.action_settings -> {
+                val builder = AlertDialog.Builder(this.applicationContext)
+                builder.setTitle("Test dialog")
+                builder.setMessage("Content")
+                val alert = builder.create()
+                alert.getWindow()!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+                alert.show()
                 return true
             }
             R.id.action_setFolder -> {

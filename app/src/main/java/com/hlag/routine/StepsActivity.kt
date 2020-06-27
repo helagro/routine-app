@@ -1,28 +1,14 @@
 package com.hlag.routine
 
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_steps.*
 import kotlinx.android.synthetic.main.step_edit_dialog.*
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
-import java.io.IOException
 import java.util.*
 import kotlin.math.floor
 
@@ -30,7 +16,7 @@ import kotlin.math.floor
 class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     StepsAdapter.StepAdapterListener,
     MyApp.TimerListeners, View.OnClickListener {
-    val TAG = "StepsActivity"
+    private val TAG = "StepsActivity"
     lateinit var app: MyApp
     lateinit var routine: Routine
     var startTime = -1
@@ -195,7 +181,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     private fun updatePlayer(){
-        step_name_view.text = app.activeStep!!.text
+        step_name_view.text = app.activeStep?.text
         step_time_view.text = app.activeStep?.duration.toString()
     }
 
@@ -217,6 +203,5 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
         FileManager.writeRoutine(this, routine)
     }
-
 
 }
