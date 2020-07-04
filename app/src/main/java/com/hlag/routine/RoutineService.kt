@@ -1,6 +1,5 @@
 package com.hlag.routine
 
-import android.app.AlertDialog
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -8,21 +7,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.AudioManager
-import android.os.Build
 import android.os.IBinder
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
-import android.view.WindowManager
+import android.util.Log
 import androidx.core.app.NotificationCompat
-import java.util.*
 
 
-class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListener {
+class RoutineService : Service(), MyApp.TimerListeners {
     companion object {
-        const val TAG = "RoutineService"
+        private const val TAG = "RoutineService"
         const val COMPLETE_ACTION = "complete-action"
 
         const val TIMER_ID = 1
@@ -43,9 +35,6 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
         }
     }
 
-    private lateinit var vibrator: Vibrator
-    private lateinit var am: AudioManager
-    private lateinit var tts: TextToSpeech
     private var builder: NotificationCompat.Builder? = null
     private var mNotificationManager: NotificationManager? = null
     lateinit var app: MyApp
@@ -54,30 +43,6 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
     override fun onCreate() {
         super.onCreate()
         app = application as MyApp
-        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-        //tts
-        am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        tts = TextToSpeech(this, this)
-        tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-            //private var curVol = 0
-            override fun onStart(utteranceId: String?) {
-                am.requestAudioFocus(
-                    null,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-                )
-
-                //curVol = am.getStreamVolume(AudioManager.STREAM_MUSIC)
-                //am.setStreamVolume(AudioManager.STREAM_MUSIC, 12, 0)
-            }
-
-            override fun onError(utteranceId: String?) {}
-            override fun onDone(utteranceId: String?) {
-                //am.setStreamVolume(AudioManager.STREAM_MUSIC, curVol, 0)
-                am.abandonAudioFocus(null)
-            }
-        })
 
         //receiver
         val filter = IntentFilter()
@@ -154,63 +119,35 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
         everySecond(activeStep.duration)
     }
 
-    fun notifyUser() {
-        val map: HashMap<String, String> = HashMap<String, String>()
-        map[TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = "UniqueID"
-
-        tts.speak(
-            "huhuhuhhhuuuhhuhh",
-            TextToSpeech.QUEUE_FLUSH, map
-        )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(
-                VibrationEffect.createOneShot(
-                    200,
-                    VibrationEffect.EFFECT_DOUBLE_CLICK
-                )
-            )
-        } else {
-            vibrator.vibrate(200)
-        }
-    }
-
-
-    //TTS
-    override fun onInit(status: Int) { //TTS
-        if (status == TextToSpeech.SUCCESS) {
-            val result: Int = tts.setLanguage(Locale.US)
-            if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
-            }
-        }
+    private fun updateNotificationWithNotify() {
+        builder?.setOnlyAlertOnce(false)
+        mNotificationManager!!.notify(TIMER_ID, builder!!.build())
+        builder?.setOnlyAlertOnce(true)
     }
 
     override fun everySecond(secsLeft: Int) {
-        builder?.setContentText(secsLeft.toString())
+        builder?.setContentText(GeneralHelpers.secToStr(secsLeft))
         mNotificationManager!!.notify(TIMER_ID, builder!!.build())
     }
 
     override fun onFinished() {
         if (app.activeStep?.duration != 0) {
             builder?.color = -60892
-            mNotificationManager!!.notify(TIMER_ID, builder!!.build())
-            notifyUser()
-            //startOverDueTimer()
+            updateNotificationWithNotify()
+            val intent = Intent(this, SnoozeActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
 
         }
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(notificationReceiver)
-        //overDueTimer?.cancel()
-        mNotificationManager?.cancel(TIMER_ID)
-        tts.stop()
-        tts.shutdown()
     }
 
     override fun onAllStepsFinished() {
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(notificationReceiver)
+        mNotificationManager?.cancel(TIMER_ID)
+    }
 }

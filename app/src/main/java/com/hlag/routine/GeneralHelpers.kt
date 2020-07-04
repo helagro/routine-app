@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 
 class GeneralHelpers {
     companion object {
@@ -23,10 +24,15 @@ class GeneralHelpers {
             intent.action = action
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
-            }
-            else{
+            } else {
                 context.startService(intent)
             }
+        }
+
+        fun secToStr(sec: Int): String {
+            val minutes: Int = sec / (60)
+            val seconds: Int = sec % 60
+            return String.format("%d:%02d", minutes, seconds)
         }
     }
 }

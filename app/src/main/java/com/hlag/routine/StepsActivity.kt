@@ -136,7 +136,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     From Timer
      */
     override fun everySecond(secsLeft: Int) {
-        step_time_view.text = secsLeft.toString()
+        step_time_view.text = GeneralHelpers.secToStr(secsLeft)
     }
 
     override fun onFinished() {
@@ -146,7 +146,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     override fun onAllStepsFinished() {
 
     }
-
 
 
     /*
@@ -180,7 +179,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         updatePlayer()
     }
 
-    private fun updatePlayer(){
+    private fun updatePlayer() {
         step_name_view.text = app.activeStep?.text
         step_time_view.text = app.activeStep?.duration.toString()
     }
