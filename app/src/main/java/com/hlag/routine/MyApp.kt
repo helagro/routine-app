@@ -38,7 +38,7 @@ class MyApp : Application() {
         }
     }
 
-    fun firstSetup() {
+    private fun firstSetup() {
         //channels
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val names = arrayOf<String>(
@@ -77,11 +77,11 @@ class MyApp : Application() {
         fun onAllStepsFinished()
     }
 
-    fun startTimer(step: Step) {
+    fun startTimer(step: Step, duration: Int) {
         timer?.cancel()
         overDue = false
 
-        timer = object : CountDownTimer(step.duration * 1000L, 1000) {
+        timer = object : CountDownTimer(duration * 1000L, 1000) {
 
             override fun onTick(p0: Long) {
                 timerListener.everySecond((p0 / 1000).toInt())
@@ -109,7 +109,7 @@ class MyApp : Application() {
             stopTimer()
         }
         else{
-            startTimer(activeStep!!)
+            startTimer(activeStep!!, activeStep!!.duration)
         }
     }
 

@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 
 
@@ -35,7 +34,8 @@ class RoutineService : Service(), MyApp.TimerListeners {
         }
     }
 
-    private var builder: NotificationCompat.Builder? = null
+    private lateinit var snoozeIntent: Intent
+    private lateinit var builder: NotificationCompat.Builder
     private var mNotificationManager: NotificationManager? = null
     lateinit var app: MyApp
 
@@ -53,8 +53,14 @@ class RoutineService : Service(), MyApp.TimerListeners {
         mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notiIntent = Intent(applicationContext, StepsActivity::class.java)
+        snoozeIntent = Intent(this, SnoozeActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
         val completePendingIntent =
             PendingIntent.getBroadcast(this, 0, Intent().setAction(COMPLETE_ACTION), 0)
+        val snoozePendingIntent =
+            PendingIntent.getActivity(applicationContext, 0, snoozeIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         builder = NotificationCompat.Builder(applicationContext, MyApp.ROUTINE_PLAYER)
             .setSmallIcon(R.drawable.ic_add_black_24dp)
@@ -63,6 +69,11 @@ class RoutineService : Service(), MyApp.TimerListeners {
                 R.drawable.ic_check_box_outline_blank_black_24dp,
                 "Complete",
                 completePendingIntent
+            )
+            .addAction(
+                R.drawable.ic_check_box_outline_blank_black_24dp,
+                "Snooze",
+                snoozePendingIntent
             )
             .setContentIntent(
                 PendingIntent.getActivity(
@@ -90,7 +101,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
             "START" -> {
                 app.timerListener = this
                 updateNotificationStep()
-                startForeground(TIMER_ID, builder?.build())
+                startForeground(TIMER_ID, builder.build())
                 if (app.overDue) {
                     //startOverDueTimer()
                 }
@@ -101,7 +112,7 @@ class RoutineService : Service(), MyApp.TimerListeners {
             }
 
             "DESTROY" -> {
-                startForeground(TIMER_ID, builder?.build())
+                startForeground(TIMER_ID, builder.build())
                 stopForeground(true)
                 stopSelf()
             }
@@ -114,31 +125,28 @@ class RoutineService : Service(), MyApp.TimerListeners {
     fun updateNotificationStep() {
         val activeStep = app.activeStep!!
 
-        builder?.color = if (app.overDue) -60892 else -16711921
-        builder?.setContentTitle(activeStep.text)
+        builder.color = if (app.overDue) -60892 else -16711921
+        builder.setContentTitle(activeStep.text)
         everySecond(activeStep.duration)
     }
 
     private fun updateNotificationWithNotify() {
-        builder?.setOnlyAlertOnce(false)
+        builder.setOnlyAlertOnce(false)
         mNotificationManager!!.notify(TIMER_ID, builder!!.build())
-        builder?.setOnlyAlertOnce(true)
+        builder.setOnlyAlertOnce(true)
     }
 
     override fun everySecond(secsLeft: Int) {
-        builder?.setContentText(GeneralHelpers.secToStr(secsLeft))
+        builder.setContentText(GeneralHelpers.secToStr(secsLeft))
         mNotificationManager!!.notify(TIMER_ID, builder!!.build())
     }
 
     override fun onFinished() {
         if (app.activeStep?.duration != 0) {
-            builder?.color = -60892
+            builder.color = -60892
             updateNotificationWithNotify()
-            val intent = Intent(this, SnoozeActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            startActivity(intent)
 
+            startActivity(snoozeIntent)
         }
     }
 

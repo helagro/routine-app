@@ -121,7 +121,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         startTime = Calendar.getInstance().get(Calendar.MINUTE)
         Log.d(TAG, "test:" + startTime)
         app.activeStep = step
-        app.startTimer(step)
+        app.startTimer(step, step.duration)
         updatePlayer()
     }
 
