@@ -1,6 +1,5 @@
 package com.hlag.routine
 
-import android.app.Application
 import android.content.Context
 import com.google.gson.Gson
 import java.io.*

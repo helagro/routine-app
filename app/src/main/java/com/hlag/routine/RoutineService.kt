@@ -127,7 +127,7 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
                 updateNotificationStep()
                 startForeground(TIMER_ID, builder?.build())
                 if (app.overDue) {
-                    startOverDueTimer()
+                    //startOverDueTimer()
                 }
             }
             "PAUSE" -> {
@@ -146,32 +146,12 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
     }
 
 
-    var overDueTimer: Timer? = null
-    var missed = 1
-    private fun startOverDueTimer() {
-        overDueTimer?.cancel()
-        overDueTimer = Timer()
-
-        overDueTimer!!.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                if (!app.overDue) {
-                    overDueTimer!!.cancel()
-                } else {
-                    missed += 1
-                    notifyUser()
-                }
-            }
-        }, OVERDUE_TIMER_DELAY, OVERDUE_TIMER_DELAY)
-    }
-
-
     fun updateNotificationStep() {
         val activeStep = app.activeStep!!
 
         builder?.color = if (app.overDue) -60892 else -16711921
         builder?.setContentTitle(activeStep.text)
         everySecond(activeStep.duration)
-        missed = 1
     }
 
     fun notifyUser() {
@@ -179,7 +159,7 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
         map[TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = "UniqueID"
 
         tts.speak(
-            missed.toString(),
+            "huhuhuhhhuuuhhuhh",
             TextToSpeech.QUEUE_FLUSH, map
         )
 
@@ -215,17 +195,8 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
             builder?.color = -60892
             mNotificationManager!!.notify(TIMER_ID, builder!!.build())
             notifyUser()
-            startOverDueTimer()
+            //startOverDueTimer()
 
-            val cal = Calendar.getInstance()
-
-            /*
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Test dialog")
-            builder.setMessage("Content")
-            val alert = builder.create()
-            alert.getWindow()!!.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
-            alert.show()*/
         }
     }
 
@@ -233,7 +204,7 @@ class RoutineService : Service(), MyApp.TimerListeners, TextToSpeech.OnInitListe
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(notificationReceiver)
-        overDueTimer?.cancel()
+        //overDueTimer?.cancel()
         mNotificationManager?.cancel(TIMER_ID)
         tts.stop()
         tts.shutdown()

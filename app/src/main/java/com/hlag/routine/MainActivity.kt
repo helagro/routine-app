@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun loadFromStorage(){
+    private fun loadFromStorage(){
         val dir = File(FileManager.dir)
         for(file in dir.listFiles()){
             routines.add(Routine(file.nameWithoutExtension, ArrayList<Step>()))
