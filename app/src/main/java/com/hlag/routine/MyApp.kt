@@ -15,8 +15,8 @@ import java.util.*
 class MyApp : Application() {
 
     companion object {
-        val ERROR_CHAN = "Errors"
-        val ROUTINE_PLAYER = "Routine player"
+        const val ERROR_CHAN = "Errors"
+        const val ROUTINE_PLAYER = "Routine player"
 
         fun getSp(context: Context): SharedPreferences {
             return Objects.requireNonNull(context)
