@@ -17,7 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SnoozeActivity"></activity>
+
+        <activity android:name=".SnoozeActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".StepsActivity"
             android:label="@string/title_activity_steps"
@@ -37,7 +40,8 @@
 
         <service
             android:name=".RoutineService"
-            android:enabled="true" />
+            android:enabled="true"
+            />
     </application>
 
 </manifest>
