@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.CountDownTimer
 import android.util.Log
+import android.widget.Toast
 import java.util.*
 
 
@@ -32,7 +33,7 @@ class MyApp : Application() {
         FileManager.dir = sp.getString("prjDir", "/storage/emulated/0/Mega Sync/Routines").toString()
 
         //first setup
-        if (sp.getBoolean("first", true) || true) {  //only debug
+        if (sp.getBoolean("first", true)) {  //only debug
             firstSetup()
             sp.edit().putBoolean("first", false).apply()
         }
@@ -64,6 +65,7 @@ class MyApp : Application() {
 
 
     lateinit var activeRoutine: Routine
+    var timeStarted = -1L
     var activeStep: Step? = null
 
     lateinit var timerListener: TimerListeners
@@ -98,6 +100,7 @@ class MyApp : Application() {
         timer!!.start()
         timed = true
         activeStep = step
+        timeStarted = Calendar.getInstance().timeInMillis
     }
 
     fun nextStep(){
@@ -118,5 +121,14 @@ class MyApp : Application() {
         timerListener.onAllStepsFinished()
         timed = false
         activeStep = null
+
+        calculateRunLength()
+    }
+
+    private fun calculateRunLength(){
+        val timeDiff = Calendar.getInstance().timeInMillis - timeStarted
+        val minDiff = (timeDiff / 1000).toInt()
+
+        Toast.makeText(applicationContext, "Routine time duration " + GeneralHelpers.secToStr(minDiff), Toast.LENGTH_LONG).show()
     }
 }
