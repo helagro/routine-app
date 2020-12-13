@@ -80,7 +80,12 @@ class MyApp : Application() {
     }
 
     fun startTimer(step: Step, duration: Int) {
-        timer?.cancel()
+        if(timer == null){
+            timeStarted = Calendar.getInstance().timeInMillis
+        } else{
+            timer!!.cancel()
+        }
+
         overDue = false
 
         timer = object : CountDownTimer(duration * 1000L, 1000) {
@@ -100,7 +105,6 @@ class MyApp : Application() {
         timer!!.start()
         timed = true
         activeStep = step
-        timeStarted = Calendar.getInstance().timeInMillis
     }
 
     fun nextStep(){
