@@ -86,6 +86,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFromStorage(){
         val dir = File(FileManager.dir)
+
+        if(!dir.isDirectory){
+            Log.d("dwa", dir.toString())
+        }
+
         for(file in dir.listFiles()){
             routines.add(Routine(file.nameWithoutExtension, ArrayList<Step>()))
         }

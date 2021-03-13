@@ -30,7 +30,7 @@ class MyApp : Application() {
         super.onCreate()
 
         val sp = getSp(this)
-        FileManager.dir = sp.getString("prjDir", "/storage/emulated/0/Mega Sync/Routines").toString()
+        FileManager.dir = sp.getString("prjDir", "/storage/emulated/0/0doc/mega-sync/routines").toString()
 
         //first setup
         if (sp.getBoolean("first", true)) {  //only debug

@@ -6,8 +6,7 @@ import java.io.*
 
 class FileManager {
     companion object {
-        var dir = "/storage/emulated/0/Mega Sync/Routines"
-
+        var dir = "/storage/emulated/0"
         fun readFile(name: String?): Routine? {
             val text = StringBuilder()
 
