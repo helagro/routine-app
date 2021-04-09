@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_steps.*
 import kotlinx.android.synthetic.main.step_edit_dialog.*
 import java.util.*
@@ -20,6 +21,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     lateinit var app: MyApp
     lateinit var routine: Routine
     var startTime = -1
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +41,9 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
             app.activeRoutine = routine
         } ?: run {
             routine = app.activeRoutine
+            Log.d("tag", "Active shit")
         }
+        Log.d("tag", routineName + " routine: " + Gson().toJson(routine))
 
         //setup view
         title = routineName
@@ -107,6 +111,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         stepDialog.setOnDismissListener {
             if (stepDialog.delete) {
                 routine.steps.remove(step)
+                Log.d("del",Gson().toJson(routine).toString())
                 steps_list.adapter?.notifyItemRemoved(position)
             } else {
                 step.text = stepDialog.step_name_edit.text.toString()

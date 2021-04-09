@@ -1,14 +1,17 @@
 package com.hlag.routine
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import java.io.*
 
 class FileManager {
     companion object {
         var dir = "/storage/emulated/0"
+
         fun readFile(name: String?): Routine? {
             val text = StringBuilder()
+            Log.d("tag", "Routine file:  " + File(dir, name + ".txt").absoluteFile)
 
             try {
                 val br = BufferedReader(FileReader(File(dir, name + ".txt")))
@@ -31,6 +34,7 @@ class FileManager {
             val text = Gson().toJson(routine).toString()
             val file = File(dir, routine.name + ".txt")
 
+            Log.d("tag", text + "    file:" + file)
             val fileOutputStream = FileOutputStream(file)
             fileOutputStream.use { fileOutputStream ->
                 fileOutputStream.write(text.toByteArray())
