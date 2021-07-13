@@ -1,5 +1,6 @@
 package com.hlag.routine
 
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -83,9 +84,11 @@ class RoutineService : Service(), MyApp.TimerListeners {
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
-            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setAutoCancel(true)
             .setColor(-16711921)
+            .setOnlyAlertOnce(true)
+            .setDefaults(Notification.DEFAULT_ALL)
     }
 
     override fun onBind(p0: Intent?): IBinder? {

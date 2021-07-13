@@ -47,7 +47,7 @@ class MyApp : Application() {
                 ROUTINE_PLAYER
             )
             val priorities = intArrayOf(
-                NotificationManager.IMPORTANCE_HIGH, NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_HIGH, NotificationManager.IMPORTANCE_LOW
             )
             val descriptions = arrayOf(
                 "For showing errors", "To see steps outside the app"
