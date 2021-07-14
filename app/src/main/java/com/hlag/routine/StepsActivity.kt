@@ -34,16 +34,8 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
         app = (application as MyApp)
 
-        //get routine
         val routineName: String? = intent.getStringExtra("routine_name")
-        routineName?.let {
-            routine = FileManager.readFile(routineName)!!
-            app.activeRoutine = routine
-        } ?: run {
-            routine = app.activeRoutine
-            Log.d("tag", "Active shit")
-        }
-        Log.d("tag", routineName + " routine: " + Gson().toJson(routine))
+        loadRoutine(routineName)
 
         //setup view
         title = routineName
@@ -52,6 +44,15 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         step_check_view.setOnClickListener(this)
         step_name_view.setTextIsSelectable(true)
         fab.setOnClickListener(this)
+    }
+
+    private fun loadRoutine(routineName: String?){
+        routineName?.let {
+            routine = FileManager.readFile(routineName)!!
+            app.activeRoutine = routine
+        } ?: run {
+            routine = app.activeRoutine
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -80,14 +81,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
                 return true
             }
             R.id.action_uncheck -> {
-                routine.steps.forEachIndexed { i, step ->
-                    step.checked = false
-                }
-
-                steps_list.post {
-                    steps_list.adapter!!.notifyDataSetChanged()
-                }
-
+                uncheckAll()
                 return true
             }
             R.id.action_start_timer -> {
@@ -111,7 +105,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         stepDialog.setOnDismissListener {
             if (stepDialog.delete) {
                 routine.steps.remove(step)
-                Log.d("del",Gson().toJson(routine).toString())
                 steps_list.adapter?.notifyItemRemoved(position)
             } else {
                 step.text = stepDialog.step_name_edit.text.toString()
@@ -124,7 +117,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     override fun onItemPlayPressed(step: Step) {
         startTime = Calendar.getInstance().get(Calendar.MINUTE)
-        Log.d(TAG, "test:" + startTime)
         app.activeStep = step
         app.startTimer(step, step.duration)
         updatePlayer()
@@ -149,7 +141,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     override fun onAllStepsFinished() {
-
+        uncheckAll()
     }
 
 
@@ -178,6 +170,17 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     /*
     Helpers
      */
+
+    private fun uncheckAll(){
+        routine.steps.forEachIndexed { i, step ->
+            step.checked = false
+        }
+
+        steps_list.post {
+            steps_list.adapter!!.notifyDataSetChanged()
+        }
+    }
+
     private fun nextStep() {
         steps_list.adapter!!.notifyDataSetChanged()
         app.nextStep()
