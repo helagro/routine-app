@@ -74,12 +74,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_settings -> {
-                return true
-            }
-            R.id.action_delete -> {
-                return true
-            }
             R.id.action_uncheck -> {
                 uncheckAll()
                 return true

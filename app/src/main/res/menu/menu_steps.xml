@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.hlag.routine.MainActivity">
+    <!--
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
@@ -10,7 +11,7 @@
     <item
         android:id="@+id/action_delete"
         android:title="Delete"
-        app:showAsAction="never" />
+        app:showAsAction="never" /> -->
     <item
         android:id="@+id/action_uncheck"
         android:title="Uncheck all"
