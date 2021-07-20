@@ -11,11 +11,12 @@ import kotlinx.android.synthetic.main.activity_snooze.*
 class SnoozeActivity : AppCompatActivity() {
     private var snoozeSet = false
     private var relevantStep: Step? = null
+    private val routinePlayer = RoutinePlayer.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snooze)
-        relevantStep = (application as MyApp).activeStep
+        relevantStep = routinePlayer.activeStep
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
         delay_min.requestFocus()
@@ -34,14 +35,14 @@ class SnoozeActivity : AppCompatActivity() {
     }
 
     fun setSnooze(sec: Int){
-        val app = (application as MyApp)
+        val app = routinePlayer
         app.startTimer(app.activeStep!!, sec)
         snoozeSet = true
     }
 
     override fun onPause() {
         super.onPause()
-        if(!snoozeSet && (application as MyApp).activeStep == relevantStep){
+        if(!snoozeSet && routinePlayer.activeStep == relevantStep){
             setSnooze(60)
         }
         finish()

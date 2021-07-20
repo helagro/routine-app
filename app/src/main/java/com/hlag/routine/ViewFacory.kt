@@ -4,13 +4,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_steps.*
 import java.util.*
 
 class ViewFacory {
     companion object {
         fun setupRecycler(stepsActivity: StepsActivity, steps_list: RecyclerView) {
-            val app = stepsActivity.app
+            val app = stepsActivity.routinePlayer
 
             //setup steps ui
             steps_list.layoutManager = LinearLayoutManager(stepsActivity)

@@ -88,7 +88,8 @@ class MainActivity : AppCompatActivity() {
         val dir = File(FileManager.dir)
 
         if(!dir.isDirectory){
-            Log.d("dwa", dir.toString())
+            Log.d("Is file", dir.toString())
+            return
         }
 
         for(file in dir.listFiles()){

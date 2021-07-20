@@ -2,12 +2,10 @@ package com.hlag.routine
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_steps.*
 import kotlinx.android.synthetic.main.step_edit_dialog.*
 import java.util.*
@@ -16,9 +14,9 @@ import kotlin.math.floor
 
 class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     StepsAdapter.StepAdapterListener,
-    MyApp.TimerListeners, View.OnClickListener {
+    RoutinePlayer.TimerListeners, View.OnClickListener {
     private val TAG = "StepsActivity"
-    lateinit var app: MyApp
+    lateinit var routinePlayer: RoutinePlayer
     lateinit var routine: Routine
     var startTime = -1
 
@@ -32,7 +30,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        app = (application as MyApp)
+        routinePlayer = RoutinePlayer.getInstance()
 
         val routineName: String? = intent.getStringExtra("routine_name")
         loadRoutine(routineName)
@@ -49,9 +47,9 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     private fun loadRoutine(routineName: String?){
         routineName?.let {
             routine = FileManager.readFile(routineName)!!
-            app.activeRoutine = routine
+            routinePlayer.activeRoutine = routine
         } ?: run {
-            routine = app.activeRoutine
+            routine = routinePlayer.activeRoutine
         }
     }
 
@@ -61,7 +59,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     override fun onResume() {
-        app.timerListener = this
+        routinePlayer.timerListener = this
         if (GeneralHelpers.isMyServiceRunning(this, RoutineService::class.java)) {
             steps_list.adapter?.notifyDataSetChanged()
             updatePlayer()
@@ -79,7 +77,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
                 return true
             }
             R.id.action_start_timer -> {
-                app.stopTimer()
+                routinePlayer.stopTimer()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -111,13 +109,13 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     override fun onItemPlayPressed(step: Step) {
         startTime = Calendar.getInstance().get(Calendar.MINUTE)
-        app.activeStep = step
-        app.startTimer(step, step.duration)
+        routinePlayer.activeStep = step
+        routinePlayer.startTimer(step, step.duration)
         updatePlayer()
     }
 
     override fun onItemChecked(step: Step?) {
-        if (step!! == app.activeStep) {
+        if (step!! == routinePlayer.activeStep) {
             nextStep()
         }
     }
@@ -177,13 +175,13 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     private fun nextStep() {
         steps_list.adapter!!.notifyDataSetChanged()
-        app.nextStep()
+        routinePlayer.nextStep()
         updatePlayer()
     }
 
     private fun updatePlayer() {
-        step_name_view.text = app.activeStep?.text
-        step_time_view.text = app.activeStep?.duration.toString()
+        step_name_view.text = routinePlayer.activeStep?.text
+        step_time_view.text = routinePlayer.activeStep?.duration.toString()
     }
 
 
@@ -194,7 +192,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         super.onPause()
 
         //Contact with service
-        if (app.timed) {
+        if (routinePlayer.timed) {
             GeneralHelpers.startForeground(this, RoutineService::class.java, "START")
 
         } else if (GeneralHelpers.isMyServiceRunning(this, RoutineService::class.java)) {

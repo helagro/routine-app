@@ -12,9 +12,8 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 
 
-class RoutineService : Service(), MyApp.TimerListeners {
+class RoutineService : Service(), RoutinePlayer.TimerListeners {
     companion object {
-        private const val TAG = "RoutineService"
         const val COMPLETE_ACTION = "complete-action"
 
         const val TIMER_ID = 1
@@ -23,10 +22,10 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
     private val notificationReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) { //complete button
-            val application = (application as MyApp)
-            application.nextStep()
+            val routinePlayer = RoutinePlayer.getInstance()
+            routinePlayer.nextStep()
 
-            application.activeStep?.let {
+            routinePlayer.activeStep?.let {
                 updateNotificationStep()
 
             } ?: run {//Done all steps
@@ -38,12 +37,12 @@ class RoutineService : Service(), MyApp.TimerListeners {
     private lateinit var snoozeIntent: Intent
     private lateinit var builder: NotificationCompat.Builder
     private var mNotificationManager: NotificationManager? = null
-    lateinit var app: MyApp
+    lateinit var routinePlayer: RoutinePlayer
 
 
     override fun onCreate() {
         super.onCreate()
-        app = application as MyApp
+        routinePlayer = RoutinePlayer.getInstance()
 
         //receiver
         val filter = IntentFilter()
@@ -102,10 +101,10 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
         when (intent.action) {
             "START" -> {
-                app.timerListener = this
+                routinePlayer.timerListener = this
                 updateNotificationStep()
                 startForeground(TIMER_ID, builder.build())
-                if (app.overDue) {
+                if (routinePlayer.overDue) {
                     //startOverDueTimer()
                 }
             }
@@ -126,26 +125,26 @@ class RoutineService : Service(), MyApp.TimerListeners {
 
 
     fun updateNotificationStep() {
-        val activeStep = app.activeStep!!
+        val activeStep = routinePlayer.activeStep!!
 
-        builder.color = if (app.overDue) -60892 else -16711921
+        builder.color = if (routinePlayer.overDue) -60892 else -16711921
         builder.setContentTitle(activeStep.text)
         everySecond(activeStep.duration)
     }
 
     private fun updateNotificationWithNotify() {
         builder.setOnlyAlertOnce(false)
-        mNotificationManager!!.notify(TIMER_ID, builder!!.build())
+        mNotificationManager!!.notify(TIMER_ID, builder.build())
         builder.setOnlyAlertOnce(true)
     }
 
     override fun everySecond(secsLeft: Int) {
         builder.setContentText(GeneralHelpers.secToStr(secsLeft))
-        mNotificationManager!!.notify(TIMER_ID, builder!!.build())
+        mNotificationManager!!.notify(TIMER_ID, builder.build())
     }
 
     override fun onFinished() {
-        if (app.activeStep?.duration != 0) {
+        if (routinePlayer.activeStep?.duration != 0) {
             builder.color = -60892
             updateNotificationWithNotify()
 
