@@ -36,7 +36,7 @@ class SnoozeActivity : AppCompatActivity() {
 
     fun setSnooze(sec: Int){
         val app = routinePlayer
-        app.startTimer(app.activeStep!!, sec)
+        app.beginStep(app.activeStep!!, sec)
         snoozeSet = true
     }
 

@@ -143,7 +143,11 @@ class RoutineService : Service(), RoutinePlayer.TimerListeners {
         mNotificationManager!!.notify(TIMER_ID, builder.build())
     }
 
-    override fun onFinished() {
+    override fun onStarted() {
+
+    }
+
+    override fun onStepTimerFinished() {
         if (routinePlayer.activeStep?.duration != 0) {
             builder.color = -60892
             updateNotificationWithNotify()
@@ -152,7 +156,7 @@ class RoutineService : Service(), RoutinePlayer.TimerListeners {
         }
     }
 
-    override fun onAllStepsFinished() {
+    override fun onRoutineFinished() {
     }
 
     override fun onDestroy() {

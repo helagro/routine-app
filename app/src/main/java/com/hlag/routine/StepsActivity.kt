@@ -18,8 +18,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     private val TAG = "StepsActivity"
     lateinit var routinePlayer: RoutinePlayer
     lateinit var routine: Routine
-    var startTime = -1
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,15 +40,23 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         step_check_view.setOnClickListener(this)
         step_name_view.setTextIsSelectable(true)
         fab.setOnClickListener(this)
+        changeUiBasedOnRoutinePlayerIsRunning()
     }
 
-    private fun loadRoutine(routineName: String?){
+    private fun loadRoutine(routineName: String?) {
         routineName?.let {
             routine = FileManager.readFile(routineName)!!
-            routinePlayer.activeRoutine = routine
+            routinePlayer.routine = routine
         } ?: run {
-            routine = routinePlayer.activeRoutine
+            routine = routinePlayer.routine
         }
+    }
+
+    private fun changeUiBasedOnRoutinePlayerIsRunning(){
+        if(routinePlayer.isRunning)
+            step_check_view.setImageDrawable(getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp))
+        else
+            step_check_view.setImageDrawable(getDrawable(R.drawable.play_arrow_black))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -73,11 +79,13 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_uncheck -> {
-                uncheckAll()
+                routinePlayer.uncheckAllSteps()
+                steps_list.adapter?.notifyDataSetChanged()
                 return true
             }
             R.id.action_start_timer -> {
-                routinePlayer.stopTimer()
+                routinePlayer.finishRoutine()
+                changeUiBasedOnRoutinePlayerIsRunning()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -108,10 +116,13 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     }
 
     override fun onItemPlayPressed(step: Step) {
-        startTime = Calendar.getInstance().get(Calendar.MINUTE)
-        routinePlayer.activeStep = step
-        routinePlayer.startTimer(step, step.duration)
-        updatePlayer()
+        if(routinePlayer.isRunning){
+            routinePlayer.beginStep(step, step.duration)
+            updatePlayer()
+        } else {
+            routinePlayer.startRoutine()
+        }
+
     }
 
     override fun onItemChecked(step: Step?) {
@@ -128,12 +139,15 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         step_time_view.text = GeneralHelpers.secToStr(secsLeft)
     }
 
-    override fun onFinished() {
-
+    override fun onStarted() {
+        changeUiBasedOnRoutinePlayerIsRunning()
     }
 
-    override fun onAllStepsFinished() {
-        uncheckAll()
+    override fun onStepTimerFinished() {
+    }
+
+    override fun onRoutineFinished() {
+        changeUiBasedOnRoutinePlayerIsRunning()
     }
 
 
@@ -150,7 +164,15 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     override fun onClick(v: View?) {
         when (v) {
-            step_check_view -> nextStep()
+            step_check_view -> {
+                if(routinePlayer.isRunning){
+                    nextStep()
+                } else {
+                    routinePlayer.startRoutine()
+                    steps_list.adapter!!.notifyDataSetChanged()
+                    updatePlayer()
+                }
+            }
             fab -> {
                 routine.steps.add(Step(0, ""))
                 steps_list.adapter?.notifyDataSetChanged()
@@ -163,15 +185,6 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
     Helpers
      */
 
-    private fun uncheckAll(){
-        routine.steps.forEachIndexed { i, step ->
-            step.checked = false
-        }
-
-        steps_list.post {
-            steps_list.adapter!!.notifyDataSetChanged()
-        }
-    }
 
     private fun nextStep() {
         steps_list.adapter!!.notifyDataSetChanged()
@@ -192,7 +205,7 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
         super.onPause()
 
         //Contact with service
-        if (routinePlayer.timed) {
+        if (routinePlayer.activeStep != null) {
             GeneralHelpers.startForeground(this, RoutineService::class.java, "START")
 
         } else if (GeneralHelpers.isMyServiceRunning(this, RoutineService::class.java)) {

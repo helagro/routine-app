@@ -31,14 +31,14 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_alignParentBottom="true"
-        android:background="#6C6B6B"
+        android:background="#007020"
         android:paddingRight="90dp"
         >
         <ImageButton
             android:layout_width="90dp"
             android:layout_height="match_parent"
             android:id="@+id/step_check_view"
-            android:src="@drawable/ic_check_box_outline_blank_black_24dp"
+            android:src="@drawable/play_arrow_black"
             android:background="@null"
             android:scaleType="fitXY"
             android:padding="25dp"
@@ -51,8 +51,8 @@
             android:text="..."
             android:textSize="25dp"
             android:autoLink="web"
-            android:layout_toRightOf="@id/step_check_view"
-            android:layout_toLeftOf="@+id/step_time_view"/>
+            android:layout_toEndOf="@id/step_check_view"
+            android:layout_toStartOf="@+id/step_time_view"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_add_black_24dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
