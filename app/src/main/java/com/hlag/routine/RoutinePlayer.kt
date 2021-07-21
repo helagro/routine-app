@@ -1,7 +1,11 @@
 package com.hlag.routine
 
+import android.content.Context
+import android.media.RingtoneManager
 import android.os.CountDownTimer
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import java.util.*
+
 
 class RoutinePlayer {
     companion object {
@@ -27,7 +31,7 @@ class RoutinePlayer {
         fun onRoutineFinished()
     }
 
-    fun startRoutine(){
+    fun startRoutine() {
         timeStarted = Calendar.getInstance().timeInMillis
         nextStep()
         isRunning = true
@@ -51,10 +55,8 @@ class RoutinePlayer {
             }
 
             override fun onFinish() {
-                if (activeStep?.duration != 0) {
-                    overDue = true
-                    timerListener.onStepTimerFinished()
-                }
+                overDue = true
+                timerListener.onStepTimerFinished()
             }
         }
 
@@ -70,6 +72,16 @@ class RoutinePlayer {
             finishRoutine()
         } else {
             beginStep(activeStep!!, activeStep!!.duration)
+        }
+    }
+
+    fun alertUser(context: Context) {
+        try {
+            val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val r = RingtoneManager.getRingtone(context, notification)
+            r.play()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

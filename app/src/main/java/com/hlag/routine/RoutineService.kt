@@ -132,12 +132,6 @@ class RoutineService : Service(), RoutinePlayer.TimerListeners {
         everySecond(activeStep.duration)
     }
 
-    private fun updateNotificationWithNotify() {
-        builder.setOnlyAlertOnce(false)
-        mNotificationManager!!.notify(TIMER_ID, builder.build())
-        builder.setOnlyAlertOnce(true)
-    }
-
     override fun everySecond(secsLeft: Int) {
         builder.setContentText(GeneralHelpers.secToStr(secsLeft))
         mNotificationManager!!.notify(TIMER_ID, builder.build())
@@ -150,7 +144,7 @@ class RoutineService : Service(), RoutinePlayer.TimerListeners {
     override fun onStepTimerFinished() {
         if (routinePlayer.activeStep?.duration != 0) {
             builder.color = -60892
-            updateNotificationWithNotify()
+            routinePlayer.alertUser(this)
 
             startActivity(snoozeIntent)
         }

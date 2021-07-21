@@ -194,7 +194,11 @@ class StepsActivity : AppCompatActivity(), StepsAdapter.ItemClickListener,
 
     private fun updatePlayer() {
         step_name_view.text = routinePlayer.activeStep?.text
-        step_time_view.text = routinePlayer.activeStep?.duration.toString()
+        if(routinePlayer.isRunning){
+            step_time_view.text = routinePlayer.activeStep?.duration.toString()
+        } else {
+            step_time_view.text = ""
+        }
     }
 
 
