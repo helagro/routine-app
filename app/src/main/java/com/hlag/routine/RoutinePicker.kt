@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.concurrent.Callable
 
 class RoutinePicker : AppCompatActivity() {
     var routines: ArrayList<Routine> = arrayListOf()
@@ -59,12 +60,16 @@ class RoutinePicker : AppCompatActivity() {
                 builder.setTitle("Test dialog")
                 builder.setMessage("Content")
                 val alert = builder.create()
-                alert.getWindow()!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+                alert.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
                 alert.show()
                 return true
             }
             R.id.action_setFolder -> {
-                DirDialog().show(supportFragmentManager, "tag")
+                DirDialog(Callable {
+                    (routines_gridview.adapter as RoutineAdapter).clear()
+                    loadFromStorage()
+                }).show(supportFragmentManager, "tag")
+
             }
         }
 

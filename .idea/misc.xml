@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/ic_check_box_outline_blank_black_24dp.xml" value="0.211" />
         <entry key="app/src/main/res/drawable/play_arrow.xml" value="0.165" />
         <entry key="app/src/main/res/drawable/play_arrow_black.xml" value="0.211" />
+        <entry key="app/src/main/res/layout/row_layout_dir.xml" value="0.20018115942028986" />
       </map>
     </option>
   </component>

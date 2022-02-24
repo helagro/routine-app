@@ -21,8 +21,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+
+import kotlin.Function;
 
 public class DirDialog extends AppCompatDialogFragment {
 
@@ -32,7 +36,11 @@ public class DirDialog extends AppCompatDialogFragment {
 
     Button select, cancel;
     ArrayAdapter<File> dirAdapt;
+    Callable onSelect;
 
+    DirDialog(Callable onSelect){
+        this.onSelect = onSelect;
+    }
 
     @NonNull
     @Override
@@ -104,8 +112,12 @@ public class DirDialog extends AppCompatDialogFragment {
         select.setOnClickListener(view12 -> {
             String finalDir = getThisDir().getAbsolutePath();
             FileManager.Companion.setDir(getThisDir().getAbsolutePath());
-
             MyApp.Companion.getSp(getContext()).edit().putString("prjDir", finalDir).apply();
+            try {
+                onSelect.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             dismiss();
         });
 

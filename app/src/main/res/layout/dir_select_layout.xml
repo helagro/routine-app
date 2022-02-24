@@ -17,10 +17,11 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text=".."
+            android:textColor="#333333"
             android:textSize="30sp"
             android:background="@null"
             android:textAlignment="center"
-            android:gravity="center_vertical"
+            android:gravity="center_horizontal"
             android:id="@+id/dir_back"
             />
 
@@ -28,6 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Choose a save folder"
+            android:textColor="#333333"
             android:textSize="30sp"
             android:id="@+id/dir_textview"
             android:layout_weight="8"
@@ -39,7 +41,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/dir_listview"
-        android:layout_weight="400" />
+        android:layout_weight="400"
+        android:textColor="#333333"/>
 
     <LinearLayout
         android:layout_width="match_parent"
