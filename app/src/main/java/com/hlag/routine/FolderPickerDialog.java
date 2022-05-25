@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 
 import kotlin.Function;
 
-public class DirDialog extends AppCompatDialogFragment {
+public class FolderPickerDialog extends AppCompatDialogFragment {
 
     File baseDir = new File("/storage/emulated/0");
     File thisDir;
@@ -38,7 +38,7 @@ public class DirDialog extends AppCompatDialogFragment {
     ArrayAdapter<File> dirAdapt;
     Callable onSelect;
 
-    DirDialog(Callable onSelect){
+    FolderPickerDialog(Callable onSelect){
         this.onSelect = onSelect;
     }
 

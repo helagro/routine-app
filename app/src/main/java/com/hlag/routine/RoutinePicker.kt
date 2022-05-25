@@ -1,17 +1,13 @@
 package com.hlag.routine
 
-import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.concurrent.Callable
@@ -65,7 +61,7 @@ class RoutinePicker : AppCompatActivity() {
                 return true
             }
             R.id.action_setFolder -> {
-                DirDialog(Callable {
+                FolderPickerDialog(Callable {
                     (routines_gridview.adapter as RoutineAdapter).clear()
                     loadFromStorage()
                 }).show(supportFragmentManager, "tag")

@@ -8,6 +8,10 @@
         <entry key="app/src/main/res/drawable/ic_check_box_outline_blank_black_24dp.xml" value="0.211" />
         <entry key="app/src/main/res/drawable/play_arrow.xml" value="0.165" />
         <entry key="app/src/main/res/drawable/play_arrow_black.xml" value="0.211" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.20018115942028986" />
+        <entry key="app/src/main/res/layout/dir_select_layout.xml" value="0.20018115942028986" />
+        <entry key="app/src/main/res/layout/routine_grid_item.xml" value="0.20018115942028986" />
+        <entry key="app/src/main/res/layout/routine_picker_grid_item.xml" value="0.20018115942028986" />
         <entry key="app/src/main/res/layout/row_layout_dir.xml" value="0.20018115942028986" />
       </map>
     </option>
